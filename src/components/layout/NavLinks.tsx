@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, ListChecks, Target, NotebookPen, Wallet, User } from "lucide-react";
+import { LayoutDashboard, ListChecks, Target, NotebookPen, Wallet, User, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
@@ -13,6 +13,8 @@ const NAV_ITEMS = [
   { href: "/finanzas", label: "Finanzas", icon: Wallet },
   { href: "/perfil", label: "Perfil", icon: User },
 ];
+
+const HIKMAN_CAPITAL_URL = "https://hikman-prueba.vercel.app/";
 
 export function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
@@ -38,6 +40,17 @@ export function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
           </Link>
         );
       })}
+      <div className="my-2 border-t border-border" />
+      <a
+        href={HIKMAN_CAPITAL_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-surface-muted hover:text-foreground"
+        title="Abre Hikman Capital (análisis macro) en una pestaña nueva"
+      >
+        <TrendingUp size={18} />
+        Hikman Capital
+      </a>
     </nav>
   );
 }

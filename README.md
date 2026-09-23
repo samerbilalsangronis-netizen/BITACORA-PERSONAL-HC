@@ -4,6 +4,17 @@ Bitácora privada de dos usuarios para documentar disciplina diaria, emociones,
 metas personales, journal de trading y finanzas personales. Pensada como
 complemento del sistema Hikman Capital (análisis fundamental).
 
+## Relación con Hikman Capital
+
+TraderMind y [Hikman Capital](https://hikman-prueba.vercel.app/) son **dos
+apps y dos repos separados** (stacks distintos: esta es Next.js, Hikman es
+Vite + React Router), pero comparten el **mismo proyecto de Supabase** — las
+tablas de cada una tienen prefijos/nombres que no chocan entre sí. Cada app
+tiene un botón en su navegación que abre la otra en pestaña nueva. Como por
+ahora ambas corren en subdominios `.vercel.app` gratuitos (dominios distintos
+para el navegador), el login **no se comparte** entre las dos — eso requiere
+tener ambas bajo el mismo dominio propio.
+
 ## Stack
 
 - **Next.js 16** (App Router, Server Actions) + TypeScript + Tailwind CSS v4
