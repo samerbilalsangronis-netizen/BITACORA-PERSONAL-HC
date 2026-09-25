@@ -9,6 +9,7 @@ import { FinanzasBarChart } from "@/components/finanzas/FinanzasBarChart";
 import { CategoriaPieChart } from "@/components/finanzas/CategoriaPieChart";
 import type { Transaccion, TipoTransaccion } from "@/lib/supabase/types";
 import { daysAgoISO } from "@/lib/utils";
+import { todayISOForUser } from "@/lib/server-date";
 
 const formatoMonto = new Intl.NumberFormat("es-ES", { style: "currency", currency: "USD" });
 
@@ -19,12 +20,13 @@ export default async function FinanzasPage({
 }) {
   const { tipo, categoria, desde, hasta } = await searchParams;
   const { supabase, user } = await requireUser();
+  const today = await todayISOForUser();
 
   const { data: chartData } = await supabase
     .from("transacciones")
     .select("*")
     .eq("user_id", user.id)
-    .gte("fecha", daysAgoISO(180))
+    .gte("fecha", daysAgoISO(180, today))
     .order("fecha", { ascending: true });
 
   let query = supabase.from("transacciones").select("*").eq("user_id", user.id);
@@ -37,9 +39,7 @@ export default async function FinanzasPage({
   const transacciones = (data ?? []) as Transaccion[];
   const todas = (chartData ?? []) as Transaccion[];
 
-  const inicioMes = new Date();
-  inicioMes.setDate(1);
-  const inicioMesISO = inicioMes.toISOString().slice(0, 10);
+  const inicioMesISO = today.slice(0, 8) + "01";
   const delMes = todas.filter((t) => t.fecha >= inicioMesISO);
   const ingresosMes = delMes.filter((t) => t.tipo === "ingreso").reduce((s, t) => s + t.monto, 0);
   const egresosMes = delMes.filter((t) => t.tipo === "egreso").reduce((s, t) => s + t.monto, 0);

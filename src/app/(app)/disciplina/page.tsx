@@ -2,7 +2,8 @@ import { requireUser } from "@/lib/session";
 import { ensureDailyTasks } from "@/lib/disciplina-data";
 import { DisciplinaBoard } from "@/components/disciplina/DisciplinaBoard";
 import { WeeklySummary } from "@/components/disciplina/WeeklySummary";
-import { todayISO, daysAgoISO } from "@/lib/utils";
+import { daysAgoISO } from "@/lib/utils";
+import { todayISOForUser } from "@/lib/server-date";
 
 export default async function DisciplinaPage({
   searchParams,
@@ -10,7 +11,8 @@ export default async function DisciplinaPage({
   searchParams: Promise<{ fecha?: string }>;
 }) {
   const { fecha: fechaParam } = await searchParams;
-  const fecha = fechaParam && fechaParam <= todayISO() ? fechaParam : todayISO();
+  const today = await todayISOForUser();
+  const fecha = fechaParam && fechaParam <= today ? fechaParam : today;
 
   const { supabase, user } = await requireUser();
   const dailyTasks = await ensureDailyTasks(supabase, user.id, fecha);
@@ -19,8 +21,8 @@ export default async function DisciplinaPage({
     .from("disciplina_stats")
     .select("*")
     .eq("user_id", user.id)
-    .gte("fecha", daysAgoISO(6))
-    .lte("fecha", todayISO());
+    .gte("fecha", daysAgoISO(6, today))
+    .lte("fecha", today);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">

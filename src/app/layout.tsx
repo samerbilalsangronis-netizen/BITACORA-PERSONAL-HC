@@ -29,6 +29,20 @@ const THEME_INIT_SCRIPT = `
 })();
 `;
 
+// Guarda la zona horaria real del navegador en una cookie para que el
+// servidor sepa qué día es "hoy" para este usuario (en vez de usar UTC,
+// que puede diferir varias horas — ver src/lib/server-date.ts).
+const TZ_COOKIE_SCRIPT = `
+(function () {
+  try {
+    var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (tz && document.cookie.indexOf("tm-tz=" + tz) === -1) {
+      document.cookie = "tm-tz=" + tz + ";path=/;max-age=31536000;SameSite=Lax";
+    }
+  } catch (e) {}
+})();
+`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -38,6 +52,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: TZ_COOKIE_SCRIPT }} />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">{children}</body>
     </html>

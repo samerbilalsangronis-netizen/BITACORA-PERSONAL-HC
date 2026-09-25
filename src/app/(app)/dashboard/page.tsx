@@ -8,14 +8,15 @@ import { HeatmapCalendar } from "@/components/dashboard/HeatmapCalendar";
 import { EmotionPieChart } from "@/components/dashboard/EmotionPieChart";
 import { MetasSummary } from "@/components/dashboard/MetasSummary";
 import { JournalPreview } from "@/components/dashboard/JournalPreview";
-import { computeStreak, daysAgoISO, todayISO } from "@/lib/utils";
+import { computeStreak, daysAgoISO } from "@/lib/utils";
+import { todayISOForUser } from "@/lib/server-date";
 import type { Meta, JournalEntry, DisciplinaStats, Transaccion } from "@/lib/supabase/types";
 
 const formatoMonto = new Intl.NumberFormat("es-ES", { style: "currency", currency: "USD" });
 
 export default async function DashboardPage() {
   const { supabase, user, profile } = await requireUser();
-  const today = todayISO();
+  const today = await todayISOForUser();
   const inicioMes = today.slice(0, 8) + "01";
 
   const [dailyTasksToday, statsRes, metasRes, journalCountRes, latestEntryRes, emocionesRes, transaccionesMesRes] =
@@ -25,7 +26,7 @@ export default async function DashboardPage() {
         .from("disciplina_stats")
         .select("*")
         .eq("user_id", user.id)
-        .gte("fecha", daysAgoISO(125))
+        .gte("fecha", daysAgoISO(125, today))
         .lte("fecha", today),
       supabase.from("metas").select("*").eq("user_id", user.id).eq("estado", "activa").order("created_at", { ascending: false }),
       supabase.from("journal_entries").select("id", { count: "exact", head: true }).eq("user_id", user.id),
@@ -51,7 +52,7 @@ export default async function DashboardPage() {
   const totalTareas = dailyTasksToday.tareas.length;
   const completadasHoy = dailyTasksToday.tareas.filter((t) => t.completada).length;
   const porcentajeHoy = totalTareas === 0 ? 0 : Math.round((completadasHoy / totalTareas) * 100);
-  const streak = computeStreak(stats);
+  const streak = computeStreak(stats, today);
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
