@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Trash2, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
 import { deleteTransaccion } from "@/lib/actions/finanzas";
 import type { Transaccion } from "@/lib/supabase/types";
@@ -10,12 +11,14 @@ const formatoMonto = new Intl.NumberFormat("es-ES", { style: "currency", currenc
 
 export function TransaccionRow({ transaccion }: { transaccion: Transaccion }) {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
   const esIngreso = transaccion.tipo === "ingreso";
 
   function onDelete() {
     if (!confirm("¿Eliminar esta transacción?")) return;
-    startTransition(() => {
-      deleteTransaccion(transaccion.id);
+    startTransition(async () => {
+      await deleteTransaccion(transaccion.id);
+      router.refresh();
     });
   }
 

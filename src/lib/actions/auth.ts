@@ -70,7 +70,7 @@ export async function signUp(_prevState: ActionState, formData: FormData): Promi
     };
   }
 
-  redirect("/pin?next=/pin/configurar");
+  redirect("/pin?next=/dashboard");
 }
 
 export async function forgotPassword(_prevState: ActionState, formData: FormData): Promise<ActionState> {

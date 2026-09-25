@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import type { Meta, MetaProgresoHistorial, EstadoMeta } from "@/lib/supabase/types";
 import { updateProgreso, updateEstado, deleteMeta } from "@/lib/actions/metas";
@@ -24,18 +25,21 @@ export function MetaCard({ meta }: { meta: Meta }) {
   const [historial, setHistorial] = useState<MetaProgresoHistorial[] | null>(null);
   const [showHistorial, setShowHistorial] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   function commitProgreso(value: number) {
     setProgreso(value);
-    startTransition(() => {
-      updateProgreso(meta.id, value);
+    startTransition(async () => {
+      await updateProgreso(meta.id, value);
+      router.refresh();
     });
   }
 
   function changeEstado(value: EstadoMeta) {
     setEstado(value);
-    startTransition(() => {
-      updateEstado(meta.id, value);
+    startTransition(async () => {
+      await updateEstado(meta.id, value);
+      router.refresh();
     });
   }
 
@@ -54,8 +58,9 @@ export function MetaCard({ meta }: { meta: Meta }) {
 
   function onDelete() {
     if (!confirm("¿Eliminar esta meta y su historial de progreso?")) return;
-    startTransition(() => {
-      deleteMeta(meta.id);
+    startTransition(async () => {
+      await deleteMeta(meta.id);
+      router.refresh();
     });
   }
 

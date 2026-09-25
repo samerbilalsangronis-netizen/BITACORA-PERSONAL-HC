@@ -30,8 +30,12 @@ export function DisciplinaBoard({ fecha, initialTareas }: { fecha: string; initi
 
   function persist(next: TareaDiaria[]) {
     setTareas(next);
-    startTransition(() => {
-      saveDailyTasks(fecha, next);
+    startTransition(async () => {
+      await saveDailyTasks(fecha, next);
+      // revalidatePath no siempre invalida el router cache del cliente cuando
+      // la acción se llama directo (sin <form>) — forzamos refresh para que
+      // volver por el nav no muestre una versión vieja de la página.
+      router.refresh();
     });
   }
 
