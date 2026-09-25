@@ -11,7 +11,7 @@ export function EntryCard({ entry }: { entry: JournalEntry }) {
 
   return (
     <Link href={`/journal/${entry.id}`}>
-      <Card className="transition-colors hover:border-primary/50">
+      <Card className="transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/50 active:translate-y-0 active:scale-[0.99]">
         <div className="flex items-start justify-between gap-3">
           <h3 className="text-sm font-semibold">{entry.titulo}</h3>
           <Badge tone="primary">{tipoLabel}</Badge>

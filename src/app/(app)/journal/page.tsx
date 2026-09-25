@@ -53,8 +53,10 @@ export default async function JournalPage({
         </p>
       ) : (
         <div className="space-y-3">
-          {entries.map((entry) => (
-            <EntryCard key={entry.id} entry={entry} />
+          {entries.map((entry, i) => (
+            <div key={entry.id} className="animate-fade-in-up" style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>
+              <EntryCard entry={entry} />
+            </div>
           ))}
         </div>
       )}

@@ -76,8 +76,8 @@ export default async function FinanzasPage({
         </p>
       ) : (
         <ul className="divide-y divide-border rounded-xl border border-border bg-surface px-4">
-          {transacciones.map((t) => (
-            <TransaccionRow key={t.id} transaccion={t} />
+          {transacciones.map((t, i) => (
+            <TransaccionRow key={t.id} transaccion={t} index={i} />
           ))}
         </ul>
       )}

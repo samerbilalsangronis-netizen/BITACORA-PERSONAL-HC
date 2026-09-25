@@ -74,7 +74,7 @@ export function NuevaMetaForm() {
           <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
             Cancelar
           </Button>
-          <Button type="submit" disabled={pending}>
+          <Button type="submit" disabled={pending} loading={pending}>
             {pending ? "Guardando…" : "Crear meta"}
           </Button>
         </div>

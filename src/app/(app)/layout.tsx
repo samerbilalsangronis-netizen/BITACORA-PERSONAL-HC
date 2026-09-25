@@ -6,6 +6,8 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { NotificationBell } from "@/components/layout/NotificationBell";
 import { SignOutButton } from "@/components/layout/SignOutButton";
 import { ReminderScheduler } from "@/components/layout/ReminderScheduler";
+import { PageTransition } from "@/components/layout/PageTransition";
+import { Avatar } from "@/components/ui/Avatar";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const { profile } = await requireUser();
@@ -26,6 +28,16 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <div className="flex-1">
           <NavLinks />
         </div>
+        <Link
+          href="/perfil"
+          className="mb-1 flex items-center gap-2.5 rounded-lg px-2 py-2 transition-colors hover:bg-surface-muted"
+        >
+          <Avatar nombre={profile?.nombre ?? ""} avatarUrl={profile?.avatar_url} size="sm" />
+          <div className="min-w-0">
+            <p className="truncate text-sm font-medium">{profile?.nombre || "Mi perfil"}</p>
+            <p className="truncate text-xs text-muted">Ver perfil</p>
+          </div>
+        </Link>
         <SignOutButton />
       </aside>
 
@@ -38,9 +50,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-2">
             <NotificationBell />
             <ThemeToggle initialTheme={profile?.theme} />
+            <Link href="/perfil" aria-label="Ver perfil" className="transition-transform duration-150 active:scale-95">
+              <Avatar nombre={profile?.nombre ?? ""} avatarUrl={profile?.avatar_url} size="sm" />
+            </Link>
           </div>
         </header>
-        <main className="flex-1 px-4 py-6 md:px-8 md:py-8">{children}</main>
+        <main className="flex-1 px-4 py-6 md:px-8 md:py-8">
+          <PageTransition>{children}</PageTransition>
+        </main>
       </div>
     </div>
   );

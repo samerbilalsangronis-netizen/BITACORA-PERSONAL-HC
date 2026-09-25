@@ -30,7 +30,7 @@ export default function ResetPasswordPage() {
         />
       </div>
       <FormError message={state.error} />
-      <Button type="submit" className="w-full" disabled={pending}>
+      <Button type="submit" className="w-full" disabled={pending} loading={pending}>
         {pending ? "Guardando…" : "Actualizar contraseña"}
       </Button>
     </form>

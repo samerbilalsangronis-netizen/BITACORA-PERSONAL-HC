@@ -78,7 +78,7 @@ export function ReminderForm({
 
         <FormError message={state.error} />
         <FormSuccess message={state.success} />
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" disabled={pending} loading={pending}>
           {pending ? "Guardando…" : "Guardar recordatorio"}
         </Button>
       </form>

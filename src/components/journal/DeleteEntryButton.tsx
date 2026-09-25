@@ -16,7 +16,7 @@ export function DeleteEntryButton({ id }: { id: string }) {
   }
 
   return (
-    <Button variant="danger" size="sm" onClick={onDelete} disabled={pending}>
+    <Button variant="danger" size="sm" onClick={onDelete} disabled={pending} loading={pending}>
       <Trash2 size={14} />
       Eliminar
     </Button>

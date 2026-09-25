@@ -48,7 +48,7 @@ export default function SignupPage() {
       </div>
       <FormError message={state.error} />
       <FormSuccess message={state.success} />
-      <Button type="submit" className="w-full" disabled={pending}>
+      <Button type="submit" className="w-full" disabled={pending} loading={pending}>
         {pending ? "Creando cuenta…" : "Crear cuenta"}
       </Button>
       <p className="text-center text-sm text-muted">

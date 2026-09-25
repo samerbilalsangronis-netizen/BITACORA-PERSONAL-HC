@@ -38,9 +38,16 @@ export function ThemeToggle({ initialTheme }: { initialTheme?: Theme }) {
     <button
       onClick={toggle}
       aria-label="Cambiar tema"
-      className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted transition-colors hover:bg-surface-muted hover:text-foreground"
+      className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg border border-border text-muted transition-all duration-150 active:scale-[0.93] hover:bg-surface-muted hover:text-foreground"
     >
-      {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+      <Sun
+        size={18}
+        className={`absolute transition-all duration-300 ${theme === "dark" ? "rotate-0 scale-100 opacity-100" : "rotate-90 scale-0 opacity-0"}`}
+      />
+      <Moon
+        size={18}
+        className={`absolute transition-all duration-300 ${theme === "dark" ? "-rotate-90 scale-0 opacity-0" : "rotate-0 scale-100 opacity-100"}`}
+      />
     </button>
   );
 }

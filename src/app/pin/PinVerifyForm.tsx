@@ -29,7 +29,7 @@ export function PinVerifyForm({ next, nombre }: { next: string; nombre: string }
         className="text-center text-2xl tracking-[0.5em]"
       />
       <FormError message={state.error} />
-      <Button type="submit" className="w-full" disabled={pending}>
+      <Button type="submit" className="w-full" disabled={pending} loading={pending}>
         {pending ? "Verificando…" : "Continuar"}
       </Button>
     </form>

@@ -36,8 +36,10 @@ export default async function MetasPage() {
         <section className="space-y-3">
           <h2 className="text-sm font-semibold text-muted uppercase tracking-wide">Activas ({activas.length})</h2>
           <div className="space-y-3">
-            {activas.map((m) => (
-              <MetaCard key={m.id} meta={m} />
+            {activas.map((m, i) => (
+              <div key={m.id} className="animate-fade-in-up" style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>
+                <MetaCard meta={m} />
+              </div>
             ))}
           </div>
         </section>
@@ -47,8 +49,10 @@ export default async function MetasPage() {
         <section className="space-y-3">
           <h2 className="text-sm font-semibold text-muted uppercase tracking-wide">Pausadas ({pausadas.length})</h2>
           <div className="space-y-3">
-            {pausadas.map((m) => (
-              <MetaCard key={m.id} meta={m} />
+            {pausadas.map((m, i) => (
+              <div key={m.id} className="animate-fade-in-up" style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>
+                <MetaCard meta={m} />
+              </div>
             ))}
           </div>
         </section>
@@ -60,8 +64,10 @@ export default async function MetasPage() {
             Completadas ({completadas.length})
           </h2>
           <div className="space-y-3">
-            {completadas.map((m) => (
-              <MetaCard key={m.id} meta={m} />
+            {completadas.map((m, i) => (
+              <div key={m.id} className="animate-fade-in-up" style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>
+                <MetaCard meta={m} />
+              </div>
             ))}
           </div>
         </section>

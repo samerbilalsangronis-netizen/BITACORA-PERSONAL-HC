@@ -12,6 +12,7 @@ export type Profile = {
   id: string;
   email: string;
   nombre: string;
+  avatar_url: string | null;
   pin_hash: string | null;
   pin_set: boolean;
   theme: Theme;

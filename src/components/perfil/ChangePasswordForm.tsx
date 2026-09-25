@@ -34,7 +34,7 @@ export function ChangePasswordForm() {
         </div>
         <FormError message={state.error} />
         <FormSuccess message={state.success} />
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" disabled={pending} loading={pending}>
           {pending ? "Guardando…" : "Actualizar contraseña"}
         </Button>
       </form>

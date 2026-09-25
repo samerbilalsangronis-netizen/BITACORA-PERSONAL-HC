@@ -1,5 +1,6 @@
 import { requireUser } from "@/lib/session";
 import { Card, CardTitle } from "@/components/ui/Card";
+import { AvatarUpload } from "@/components/perfil/AvatarUpload";
 import { ChangePasswordForm } from "@/components/perfil/ChangePasswordForm";
 import { ChangePinForm } from "@/components/perfil/ChangePinForm";
 import { ReminderForm } from "@/components/perfil/ReminderForm";
@@ -17,6 +18,9 @@ export default async function PerfilPage() {
 
       <Card>
         <CardTitle className="mb-4">Cuenta</CardTitle>
+        <div className="mb-5">
+          <AvatarUpload userId={user.id} nombre={profile?.nombre ?? ""} avatarUrl={profile?.avatar_url ?? null} />
+        </div>
         <dl className="space-y-3 text-sm">
           <div className="flex justify-between">
             <dt className="text-muted">Nombre</dt>

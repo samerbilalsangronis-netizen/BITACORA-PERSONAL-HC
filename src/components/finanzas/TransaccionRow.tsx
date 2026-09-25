@@ -9,7 +9,7 @@ import { formatDate, labelize, cn } from "@/lib/utils";
 
 const formatoMonto = new Intl.NumberFormat("es-ES", { style: "currency", currency: "USD" });
 
-export function TransaccionRow({ transaccion }: { transaccion: Transaccion }) {
+export function TransaccionRow({ transaccion, index = 0 }: { transaccion: Transaccion; index?: number }) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const esIngreso = transaccion.tipo === "ingreso";
@@ -23,7 +23,10 @@ export function TransaccionRow({ transaccion }: { transaccion: Transaccion }) {
   }
 
   return (
-    <li className={cn("flex items-center gap-3 py-3", isPending && "opacity-50")}>
+    <li
+      className={cn("flex items-center gap-3 py-3 animate-fade-in-up", isPending && "opacity-50")}
+      style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
+    >
       {esIngreso ? (
         <ArrowUpCircle size={20} className="shrink-0 text-accent" />
       ) : (

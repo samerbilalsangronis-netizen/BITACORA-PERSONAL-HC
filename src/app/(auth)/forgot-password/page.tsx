@@ -22,7 +22,7 @@ export default function ForgotPasswordPage() {
       </div>
       <FormError message={state.error} />
       <FormSuccess message={state.success} />
-      <Button type="submit" className="w-full" disabled={pending}>
+      <Button type="submit" className="w-full" disabled={pending} loading={pending}>
         {pending ? "Enviando…" : "Enviar enlace"}
       </Button>
       <p className="text-center text-sm text-muted">

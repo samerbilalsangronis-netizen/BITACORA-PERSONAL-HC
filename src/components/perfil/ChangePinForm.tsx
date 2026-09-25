@@ -60,7 +60,7 @@ export function ChangePinForm({ hasPinSet }: { hasPinSet: boolean }) {
         </div>
         <FormError message={state.error} />
         <FormSuccess message={state.success} />
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" disabled={pending} loading={pending}>
           {pending ? "Guardando…" : "Actualizar PIN"}
         </Button>
       </form>

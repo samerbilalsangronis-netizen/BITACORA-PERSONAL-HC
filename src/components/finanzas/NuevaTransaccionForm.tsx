@@ -93,7 +93,7 @@ export function NuevaTransaccionForm() {
           <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
             Cancelar
           </Button>
-          <Button type="submit" disabled={pending}>
+          <Button type="submit" disabled={pending} loading={pending}>
             {pending ? "Guardando…" : "Registrar"}
           </Button>
         </div>

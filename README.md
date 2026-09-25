@@ -56,6 +56,8 @@ escribir sus propios datos.
 2. En **SQL Editor**, ejecuta en orden los archivos de `supabase/migrations/`:
    - `0001_init.sql`
    - `0002_finanzas.sql`
+   - `0003_default_light_theme.sql`
+   - `0004_avatar.sql` (crea el bucket de Storage `avatars` para las fotos de perfil)
 3. En **Authentication → Providers**, deja habilitado el proveedor de Email.
 4. En **Authentication → URL Configuration**, agrega la URL de tu app (por
    ejemplo `http://localhost:3000` en desarrollo y tu dominio de Vercel en

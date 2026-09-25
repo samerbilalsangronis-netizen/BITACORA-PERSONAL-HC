@@ -54,7 +54,7 @@ export function EntryForm({
       <FormError message={state.error} />
 
       <div className="flex justify-end gap-2">
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" disabled={pending} loading={pending}>
           {pending ? "Guardando…" : submitLabel}
         </Button>
       </div>

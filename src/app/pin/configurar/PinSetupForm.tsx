@@ -47,7 +47,7 @@ export function PinSetupForm({ next }: { next: string }) {
         />
       </div>
       <FormError message={state.error} />
-      <Button type="submit" className="w-full" disabled={pending}>
+      <Button type="submit" className="w-full" disabled={pending} loading={pending}>
         {pending ? "Guardando…" : "Guardar PIN"}
       </Button>
     </form>
