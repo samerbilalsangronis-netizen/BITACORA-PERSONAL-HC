@@ -19,5 +19,5 @@ export function getStoredTheme(): Theme {
   } catch {
     // ignorar
   }
-  return "dark";
+  return "light";
 }

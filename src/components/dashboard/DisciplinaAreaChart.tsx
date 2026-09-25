@@ -39,7 +39,7 @@ export function DisciplinaAreaChart({ stats }: { stats: DisciplinaStats[] }) {
               onClick={() => setRange(r)}
               className={cn(
                 "rounded-md px-2 py-1 font-medium transition-colors",
-                range === r ? "bg-surface shadow-sm text-foreground" : "text-muted"
+                range === r ? "bg-surface border border-border text-foreground" : "text-muted"
               )}
             >
               {r}d
@@ -50,12 +50,6 @@ export function DisciplinaAreaChart({ stats }: { stats: DisciplinaStats[] }) {
       <div className="h-64 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
-            <defs>
-              <linearGradient id="disciplinaFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={color} stopOpacity={0.35} />
-                <stop offset="100%" stopColor={color} stopOpacity={0} />
-              </linearGradient>
-            </defs>
             <CartesianGrid stroke={chrome.grid} vertical={false} />
             <XAxis
               dataKey="label"
@@ -85,7 +79,8 @@ export function DisciplinaAreaChart({ stats }: { stats: DisciplinaStats[] }) {
               dataKey="porcentaje"
               stroke={color}
               strokeWidth={2}
-              fill="url(#disciplinaFill)"
+              fill={color}
+              fillOpacity={0.12}
             />
           </AreaChart>
         </ResponsiveContainer>

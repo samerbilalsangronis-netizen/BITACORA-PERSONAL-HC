@@ -43,7 +43,7 @@ export function NuevaTransaccionForm() {
               key={t.value}
               className={cn(
                 "flex-1 cursor-pointer rounded-md py-1.5 text-center font-medium transition-colors",
-                tipo === t.value ? "bg-surface shadow-sm text-foreground" : "text-muted"
+                tipo === t.value ? "bg-surface border border-border text-foreground" : "text-muted"
               )}
             >
               <input

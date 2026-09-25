@@ -3,33 +3,38 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Paleta "warm paper notebook" (referencia Notion, ver globals.css history).
+ * Claro = tal cual la referencia; oscuro = extrapolado manteniendo el mismo
+ * azul de marca (familia Notion Blue / Sky Wash) ya que Notion no define dark.
+ */
 :root {
-  --background: #f4f6fb;
+  --background: #f6f5f4;
   --surface: #ffffff;
-  --surface-muted: #eef1f8;
-  --border: #dde3ee;
-  --foreground: #101828;
-  --muted: #5c6577;
-  --primary: #2f5fd6;
+  --surface-muted: #efece7;
+  --border: rgba(0, 0, 0, 0.08);
+  --foreground: #171412;
+  --muted: #6b625c;
+  --primary: #0075de;
   --primary-foreground: #ffffff;
-  --primary-soft: #e6edfd;
-  --accent: #0e9f6e;
-  --danger: #dc4747;
-  --warning: #d69e2e;
+  --primary-soft: #e6f3fe;
+  --accent: #15803d;
+  --danger: #e32d14;
+  --warning: #ffb110;
 }
 
 .dark {
-  --background: #0b1220;
-  --surface: #121a2b;
-  --surface-muted: #182238;
-  --border: #263355;
-  --foreground: #e7ecf7;
-  --muted: #93a0bd;
-  --primary: #5b8def;
-  --primary-foreground: #0b1220;
-  --primary-soft: #1c2b4d;
+  --background: #0a0e1a;
+  --surface: #12182a;
+  --surface-muted: #182036;
+  --border: rgba(255, 255, 255, 0.09);
+  --foreground: #f3f1ee;
+  --muted: #9aa1b5;
+  --primary: #62aef0;
+  --primary-foreground: #02093a;
+  --primary-soft: #182b47;
   --accent: #34d399;
-  --danger: #f27070;
+  --danger: #f2726b;
   --warning: #f2c14e;
 }
 
@@ -46,7 +51,7 @@
   --color-accent: var(--accent);
   --color-danger: var(--danger);
   --color-warning: var(--warning);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
 }
 

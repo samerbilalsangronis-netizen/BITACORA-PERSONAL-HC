@@ -20,7 +20,7 @@ export function MarkdownEditor({ defaultValue = "" }: { defaultValue?: string })
             onClick={() => setTab(t)}
             className={cn(
               "flex-1 rounded-md py-1.5 font-medium transition-colors",
-              tab === t ? "bg-surface shadow-sm text-foreground" : "text-muted"
+              tab === t ? "bg-surface border border-border text-foreground" : "text-muted"
             )}
           >
             {t === "escribir" ? "Escribir" : "Vista previa"}

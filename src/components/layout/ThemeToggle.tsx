@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { Theme } from "@/lib/supabase/types";
 
 export function ThemeToggle({ initialTheme }: { initialTheme?: Theme }) {
-  const [theme, setTheme] = useState<Theme>(initialTheme ?? "dark");
+  const [theme, setTheme] = useState<Theme>(initialTheme ?? "light");
 
   useEffect(() => {
     const hasStored = typeof window !== "undefined" && localStorage.getItem(THEME_STORAGE_KEY);

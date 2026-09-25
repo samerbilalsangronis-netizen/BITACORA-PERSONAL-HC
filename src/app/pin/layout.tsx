@@ -9,7 +9,7 @@ export default function PinLayout({ children }: { children: React.ReactNode }) {
           <h1 className="text-lg font-semibold text-foreground">Verificación de PIN</h1>
           <p className="text-sm text-muted">Segunda capa de seguridad de tu bitácora</p>
         </div>
-        <div className="rounded-2xl border border-border bg-surface p-6 shadow-sm">{children}</div>
+        <div className="rounded-2xl border border-border bg-surface p-6">{children}</div>
       </div>
     </div>
   );

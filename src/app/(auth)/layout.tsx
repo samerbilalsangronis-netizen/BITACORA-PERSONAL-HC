@@ -9,7 +9,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <h1 className="text-lg font-semibold text-foreground">TraderMind</h1>
           <p className="text-sm text-muted">Bitácora privada de disciplina y psicología de trading</p>
         </div>
-        <div className="rounded-2xl border border-border bg-surface p-6 shadow-sm">{children}</div>
+        <div className="rounded-2xl border border-border bg-surface p-6">{children}</div>
       </div>
     </div>
   );

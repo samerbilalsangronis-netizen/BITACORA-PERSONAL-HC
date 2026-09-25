@@ -35,18 +35,18 @@ export const STATUS: Record<"light" | "dark", { good: string; warning: string; s
 };
 
 export const SEQUENTIAL_BLUE: Record<"light" | "dark", string> = {
-  light: "#2a78d6",
-  dark: "#3987e5",
+  light: "#0075de",
+  dark: "#62aef0",
 };
 
 export const CHART_CHROME: Record<"light" | "dark", { grid: string; axis: string; ink: string; muted: string }> = {
-  light: { grid: "#e1e0d9", axis: "#c3c2b7", ink: "#0b0b0b", muted: "#898781" },
-  dark: { grid: "#2c2c2a", axis: "#383835", ink: "#ffffff", muted: "#898781" },
+  light: { grid: "#e6e3de", axis: "#d1cdc6", ink: "#171412", muted: "#6b625c" },
+  dark: { grid: "#242c42", axis: "#333c58", ink: "#f3f1ee", muted: "#9aa1b5" },
 };
 
 export function heatmapColor(pct: number, mode: "light" | "dark"): string {
   const s = STATUS[mode];
-  if (pct <= 0) return mode === "dark" ? "#182238" : "#eef1f8";
+  if (pct <= 0) return mode === "dark" ? "#182036" : "#efece7";
   if (pct < 50) return s.critical;
   if (pct < 100) return s.warning;
   return s.good;
