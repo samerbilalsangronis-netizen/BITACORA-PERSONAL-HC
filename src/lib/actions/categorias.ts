@@ -25,7 +25,7 @@ export async function createCategoriaPersonalizada(
     .select()
     .single();
 
-  if (error || !data) return { error: "No se pudo crear la categoría." };
+  if (error || !data) return { error: error?.message ?? "No se pudo crear la categoría." };
 
   revalidatePath("/finanzas");
   return { data: data as CategoriaPersonalizada };

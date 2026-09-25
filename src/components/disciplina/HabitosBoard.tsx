@@ -9,6 +9,7 @@ import { HabitoRow } from "@/components/disciplina/HabitoRow";
 import { HabitoForm } from "@/components/disciplina/HabitoForm";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { FormError } from "@/components/ui/FormMessage";
 import { cn, daysAgoISO, formatDate } from "@/lib/utils";
 import type { CategoriaHabito, Habito, HabitoRegistro } from "@/lib/supabase/types";
 
@@ -101,6 +102,7 @@ export function HabitosBoard({
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
   const [mostrarPausados, setMostrarPausados] = useState(false);
   const [formAbierto, setFormAbierto] = useState<{ categoria: CategoriaHabito; habito?: Habito } | null>(null);
+  const [error, setError] = useState<string>();
   const [, startTransition] = useTransition();
   const router = useRouter();
 
@@ -119,26 +121,32 @@ export function HabitosBoard({
   }
 
   function onChange(habitoId: string, valor: number) {
+    setError(undefined);
     setValorPorFecha((prev) => new Map(prev).set(`${habitoId}|${fecha}`, valor));
     marcarPendiente(habitoId, true);
     startTransition(async () => {
-      await registrarValor(habitoId, fecha, valor);
+      const result = await registrarValor(habitoId, fecha, valor);
+      if (result.error) setError(result.error);
       marcarPendiente(habitoId, false);
       router.refresh();
     });
   }
 
   function onToggleActivo(habito: Habito) {
+    setError(undefined);
     startTransition(async () => {
-      await updateHabito(habito.id, { activo: !habito.activo });
+      const result = await updateHabito(habito.id, { activo: !habito.activo });
+      if (result.error) setError(result.error);
       router.refresh();
     });
   }
 
   function onDelete(habito: Habito) {
     if (!confirm(`¿Eliminar "${habito.nombre}" y todo su historial?`)) return;
+    setError(undefined);
     startTransition(async () => {
-      await deleteHabito(habito.id);
+      const result = await deleteHabito(habito.id);
+      if (result.error) setError(result.error);
       router.refresh();
     });
   }
@@ -192,6 +200,8 @@ export function HabitosBoard({
           </div>
         </div>
       </Card>
+
+      <FormError message={error} />
 
       {formAbierto && (
         <HabitoForm

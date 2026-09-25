@@ -57,7 +57,7 @@ export async function createHabito(input: HabitoInput): Promise<{ error?: string
     .select()
     .single();
 
-  if (error || !data) return { error: "No se pudo crear." };
+  if (error || !data) return { error: error?.message ?? "No se pudo crear." };
 
   revalidar();
   return { data: data as Habito };
@@ -82,7 +82,7 @@ export async function updateHabito(
   if (typeof input.objetivo === "number") patch.objetivo = Math.max(1, Math.round(input.objetivo));
 
   const { error } = await supabase.from("habitos").update(patch).eq("id", id).eq("user_id", user.id);
-  if (error) return { error: "No se pudo actualizar." };
+  if (error) return { error: error.message };
 
   revalidar();
   return {};
@@ -96,7 +96,7 @@ export async function deleteHabito(id: string): Promise<{ error?: string }> {
   if (!user) return { error: "No autenticado." };
 
   const { error } = await supabase.from("habitos").delete().eq("id", id).eq("user_id", user.id);
-  if (error) return { error: "No se pudo eliminar." };
+  if (error) return { error: error.message };
 
   revalidar();
   return {};
@@ -122,7 +122,7 @@ export async function registrarValor(habitoId: string, fecha: string, valor: num
     { onConflict: "habito_id,fecha" }
   );
 
-  if (error) return { error: "No se pudo guardar el progreso." };
+  if (error) return { error: error.message };
 
   revalidar();
   return {};
