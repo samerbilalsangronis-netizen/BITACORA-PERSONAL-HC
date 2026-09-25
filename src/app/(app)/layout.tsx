@@ -45,7 +45,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-3">
             <MobileNav />
             <Link href="/dashboard" className="flex items-center gap-2 md:hidden">
-              <Logo className="h-7 w-7" />
+              <Logo className="h-8 w-auto" />
               <span className="text-sm font-medium text-muted">TraderMind</span>
             </Link>
           </div>
