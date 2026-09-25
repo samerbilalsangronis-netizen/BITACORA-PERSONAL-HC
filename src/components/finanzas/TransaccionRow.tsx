@@ -2,17 +2,27 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Trash2, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { deleteTransaccion } from "@/lib/actions/finanzas";
-import type { Transaccion } from "@/lib/supabase/types";
+import { resolveCategoriaVisual } from "@/lib/constants";
+import type { CategoriaPersonalizada, Transaccion } from "@/lib/supabase/types";
 import { formatDate, labelize, cn } from "@/lib/utils";
 
 const formatoMonto = new Intl.NumberFormat("es-ES", { style: "currency", currency: "USD" });
 
-export function TransaccionRow({ transaccion, index = 0 }: { transaccion: Transaccion; index?: number }) {
+export function TransaccionRow({
+  transaccion,
+  categoriasPersonalizadas = [],
+  index = 0,
+}: {
+  transaccion: Transaccion;
+  categoriasPersonalizadas?: CategoriaPersonalizada[];
+  index?: number;
+}) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const esIngreso = transaccion.tipo === "ingreso";
+  const { Icon, color } = resolveCategoriaVisual(transaccion.categoria, categoriasPersonalizadas);
 
   function onDelete() {
     if (!confirm("¿Eliminar esta transacción?")) return;
@@ -27,11 +37,12 @@ export function TransaccionRow({ transaccion, index = 0 }: { transaccion: Transa
       className={cn("flex items-center gap-3 py-3 animate-fade-in-up", isPending && "opacity-50")}
       style={{ animationDelay: `${Math.min(index, 8) * 40}ms` }}
     >
-      {esIngreso ? (
-        <ArrowUpCircle size={20} className="shrink-0 text-accent" />
-      ) : (
-        <ArrowDownCircle size={20} className="shrink-0 text-danger" />
-      )}
+      <span
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+        style={{ background: `${color}20`, color }}
+      >
+        <Icon size={16} />
+      </span>
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium">
           {labelize(transaccion.categoria)}

@@ -43,8 +43,18 @@ export type Meta = {
   progreso: number;
   fecha_inicio: string;
   fecha_objetivo: string | null;
+  foto_url: string | null;
   created_at: string;
   updated_at: string;
+};
+
+export type VisionBoardItem = {
+  id: string;
+  user_id: string;
+  imagen_url: string;
+  titulo: string;
+  orden: number;
+  created_at: string;
 };
 
 export type MetaProgresoHistorial = {
@@ -104,6 +114,16 @@ export type Transaccion = {
   updated_at: string;
 };
 
+export type CategoriaPersonalizada = {
+  id: string;
+  user_id: string;
+  tipo: TipoTransaccion;
+  nombre: string;
+  icono: string;
+  color: string;
+  created_at: string;
+};
+
 type EmptyRecord = Record<never, never>;
 
 export type Database = {
@@ -155,6 +175,18 @@ export type Database = {
         Row: Transaccion;
         Insert: Partial<Transaccion>;
         Update: Partial<Transaccion>;
+        Relationships: [];
+      };
+      categorias_personalizadas: {
+        Row: CategoriaPersonalizada;
+        Insert: Partial<CategoriaPersonalizada>;
+        Update: Partial<CategoriaPersonalizada>;
+        Relationships: [];
+      };
+      vision_board_items: {
+        Row: VisionBoardItem;
+        Insert: Partial<VisionBoardItem>;
+        Update: Partial<VisionBoardItem>;
         Relationships: [];
       };
     };

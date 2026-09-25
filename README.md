@@ -58,6 +58,8 @@ escribir sus propios datos.
    - `0002_finanzas.sql`
    - `0003_default_light_theme.sql`
    - `0004_avatar.sql` (crea el bucket de Storage `avatars` para las fotos de perfil)
+   - `0005_categorias_personalizadas.sql` (categorías de finanzas creadas por el usuario)
+   - `0006_metas_vision.sql` (foto en metas logradas + tablero de visión; crea el bucket de Storage `metas`)
 3. En **Authentication → Providers**, deja habilitado el proveedor de Email.
 4. En **Authentication → URL Configuration**, agrega la URL de tu app (por
    ejemplo `http://localhost:3000` en desarrollo y tu dominio de Vercel en

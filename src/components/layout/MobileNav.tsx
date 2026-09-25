@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { NavLinks } from "./NavLinks";
+import { Logo } from "@/components/ui/Logo";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -21,7 +22,10 @@ export function MobileNav() {
           <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
           <div className="relative flex h-full w-64 flex-col gap-6 bg-surface p-4 shadow-xl">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold">TraderMind</span>
+              <div className="flex items-center gap-2">
+                <Logo />
+                <span className="text-sm font-semibold">TraderMind</span>
+              </div>
               <button
                 onClick={() => setOpen(false)}
                 aria-label="Cerrar menú"
