@@ -6,11 +6,11 @@ import { Card, CardTitle } from "@/components/ui/Card";
 import { cn, daysAgoISO, formatDate } from "@/lib/utils";
 import { useTheme } from "@/lib/useTheme";
 import { CHART_CHROME, SEQUENTIAL_BLUE } from "@/lib/palette";
-import type { DisciplinaStats } from "@/lib/supabase/types";
+import type { DiaStat } from "@/lib/habitos";
 
 const RANGES = [30, 60, 90] as const;
 
-export function DisciplinaAreaChart({ stats }: { stats: DisciplinaStats[] }) {
+export function DisciplinaAreaChart({ stats }: { stats: DiaStat[] }) {
   const [range, setRange] = useState<(typeof RANGES)[number]>(30);
   const theme = useTheme();
   const color = SEQUENTIAL_BLUE[theme];

@@ -5,12 +5,12 @@ import { Card, CardTitle } from "@/components/ui/Card";
 import { daysAgoISO, formatDate } from "@/lib/utils";
 import { useTheme } from "@/lib/useTheme";
 import { heatmapColor } from "@/lib/palette";
-import type { DisciplinaStats } from "@/lib/supabase/types";
+import type { DiaStat } from "@/lib/habitos";
 
 const WEEKS = 18;
 const DAY_LABELS = ["L", "M", "X", "J", "V", "S", "D"];
 
-export function HeatmapCalendar({ stats }: { stats: DisciplinaStats[] }) {
+export function HeatmapCalendar({ stats }: { stats: DiaStat[] }) {
   const theme = useTheme();
   const byFecha = useMemo(() => new Map(stats.map((s) => [s.fecha, s.porcentaje_cumplimiento])), [stats]);
 

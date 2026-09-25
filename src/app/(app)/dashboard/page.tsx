@@ -1,16 +1,17 @@
 import Link from "next/link";
 import { NotebookPen, Target, Flame, Percent, Wallet } from "lucide-react";
 import { requireUser } from "@/lib/session";
-import { ensureDailyTasks } from "@/lib/disciplina-data";
 import { StatCard } from "@/components/ui/StatCard";
 import { DisciplinaAreaChart } from "@/components/dashboard/DisciplinaAreaChart";
 import { HeatmapCalendar } from "@/components/dashboard/HeatmapCalendar";
+import { DashboardCalendar } from "@/components/dashboard/DashboardCalendar";
 import { EmotionPieChart } from "@/components/dashboard/EmotionPieChart";
 import { MetasSummary } from "@/components/dashboard/MetasSummary";
 import { JournalPreview } from "@/components/dashboard/JournalPreview";
 import { computeStreak, daysAgoISO } from "@/lib/utils";
+import { computeStatsDiarios } from "@/lib/habitos";
 import { todayISOForUser } from "@/lib/server-date";
-import type { Meta, JournalEntry, DisciplinaStats, Transaccion } from "@/lib/supabase/types";
+import type { Meta, JournalEntry, Habito, HabitoRegistro, Transaccion } from "@/lib/supabase/types";
 
 const formatoMonto = new Intl.NumberFormat("es-ES", { style: "currency", currency: "USD" });
 
@@ -18,16 +19,12 @@ export default async function DashboardPage() {
   const { supabase, user, profile } = await requireUser();
   const today = await todayISOForUser();
   const inicioMes = today.slice(0, 8) + "01";
+  const desde125 = daysAgoISO(125, today);
 
-  const [dailyTasksToday, statsRes, metasRes, journalCountRes, latestEntryRes, emocionesRes, transaccionesMesRes] =
+  const [habitosRes, registrosRes, metasRes, journalCountRes, latestEntryRes, emocionesRes, transaccionesMesRes, metasFechaRes] =
     await Promise.all([
-      ensureDailyTasks(supabase, user.id, today),
-      supabase
-        .from("disciplina_stats")
-        .select("*")
-        .eq("user_id", user.id)
-        .gte("fecha", daysAgoISO(125, today))
-        .lte("fecha", today),
+      supabase.from("habitos").select("*").eq("user_id", user.id),
+      supabase.from("habito_registros").select("*").eq("user_id", user.id).gte("fecha", desde125).lte("fecha", today),
       supabase.from("metas").select("*").eq("user_id", user.id).eq("estado", "activa").order("created_at", { ascending: false }),
       supabase.from("journal_entries").select("id", { count: "exact", head: true }).eq("user_id", user.id),
       supabase
@@ -39,19 +36,26 @@ export default async function DashboardPage() {
         .maybeSingle(),
       supabase.from("journal_entries").select("emociones").eq("user_id", user.id).limit(500),
       supabase.from("transacciones").select("*").eq("user_id", user.id).gte("fecha", inicioMes),
+      supabase.from("metas").select("id,titulo,fecha_objetivo").eq("user_id", user.id).not("fecha_objetivo", "is", null),
     ]);
 
-  const stats = (statsRes.data ?? []) as DisciplinaStats[];
+  const habitos = (habitosRes.data ?? []) as Habito[];
+  const registros = (registrosRes.data ?? []) as HabitoRegistro[];
+  const fechasStats = Array.from({ length: 126 }, (_, i) => daysAgoISO(125 - i, today));
+  const stats = computeStatsDiarios(habitos, registros, fechasStats);
+
   const metasActivas = (metasRes.data ?? []) as Meta[];
   const totalMetasRes = await supabase.from("metas").select("id", { count: "exact", head: true }).eq("user_id", user.id);
   const latestEntry = (latestEntryRes.data ?? null) as JournalEntry | null;
   const emociones = (emocionesRes.data ?? []).map((e) => e.emociones as string[]);
   const transaccionesMes = (transaccionesMesRes.data ?? []) as Transaccion[];
   const balanceMes = transaccionesMes.reduce((s, t) => s + (t.tipo === "ingreso" ? t.monto : -t.monto), 0);
+  const metasConFecha = (metasFechaRes.data ?? []) as { id: string; titulo: string; fecha_objetivo: string }[];
 
-  const totalTareas = dailyTasksToday.tareas.length;
-  const completadasHoy = dailyTasksToday.tareas.filter((t) => t.completada).length;
-  const porcentajeHoy = totalTareas === 0 ? 0 : Math.round((completadasHoy / totalTareas) * 100);
+  const statsHoy = stats.find((s) => s.fecha === today);
+  const totalTareas = statsHoy?.tareas_totales ?? 0;
+  const completadasHoy = statsHoy?.tareas_completadas ?? 0;
+  const porcentajeHoy = statsHoy?.porcentaje_cumplimiento ?? 0;
   const streak = computeStreak(stats, today);
 
   return (
@@ -62,7 +66,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
-        <StatCard label="Disciplina hoy" value={`${porcentajeHoy}%`} icon={Percent} hint={`${completadasHoy}/${totalTareas} tareas`} />
+        <StatCard label="Disciplina hoy" value={`${Math.round(porcentajeHoy)}%`} icon={Percent} hint={`${completadasHoy}/${totalTareas} tareas`} />
         <StatCard label="Racha días completos" value={streak} icon={Flame} hint="días al 100%" />
         <StatCard label="Entradas de journal" value={journalCountRes.count ?? 0} icon={NotebookPen} />
         <StatCard label="Metas totales" value={totalMetasRes.count ?? 0} icon={Target} hint={`${metasActivas.length} activas`} />
@@ -78,7 +82,10 @@ export default async function DashboardPage() {
         <MetasSummary metas={metasActivas} />
       </div>
 
-      <HeatmapCalendar stats={stats} />
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <DashboardCalendar habitos={habitos} registros={registros} metas={metasConFecha} today={today} />
+        <HeatmapCalendar stats={stats} />
+      </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <JournalPreview entry={latestEntry} />

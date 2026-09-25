@@ -60,6 +60,7 @@ escribir sus propios datos.
    - `0004_avatar.sql` (crea el bucket de Storage `avatars` para las fotos de perfil)
    - `0005_categorias_personalizadas.sql` (categorías de finanzas creadas por el usuario)
    - `0006_metas_vision.sql` (foto en metas logradas + tablero de visión; crea el bucket de Storage `metas`)
+   - `0007_disciplina_habitos.sql` (rediseño de Disciplina: tareas/hábitos con racha, contador con objetivo y días de la semana; migra automáticamente el historial de `daily_tasks`)
 3. En **Authentication → Providers**, deja habilitado el proveedor de Email.
 4. En **Authentication → URL Configuration**, agrega la URL de tu app (por
    ejemplo `http://localhost:3000` en desarrollo y tu dominio de Vercel en

@@ -3,6 +3,8 @@ export type TipoMeta = "corto_plazo" | "mediano_plazo" | "largo_plazo";
 export type EstadoMeta = "activa" | "completada" | "pausada";
 export type Theme = "dark" | "light";
 export type TipoTransaccion = "ingreso" | "egreso";
+export type CategoriaHabito = "tarea" | "habito";
+export type TipoHabito = "check" | "contador";
 
 // Nota: estos tipos usan `type` (no `interface`) a propósito. Un `interface`
 // no satisface el `extends Record<string, unknown>` que exige el generic
@@ -66,30 +68,32 @@ export type MetaProgresoHistorial = {
   created_at: string;
 };
 
-export type TareaDiaria = {
-  id: string;
-  descripcion: string;
-  orden: number;
-  completada: boolean;
-  hora_completada: string | null;
-};
-
-export type DailyTasks = {
+export type Habito = {
   id: string;
   user_id: string;
-  fecha: string;
-  tareas: TareaDiaria[];
+  categoria: CategoriaHabito;
+  tipo: TipoHabito;
+  nombre: string;
+  objetivo: number;
+  unidad: string;
+  icono: string;
+  color: string;
+  dias_semana: number[];
+  activo: boolean;
+  orden: number;
   created_at: string;
   updated_at: string;
 };
 
-export type DisciplinaStats = {
+export type HabitoRegistro = {
   id: string;
+  habito_id: string;
   user_id: string;
   fecha: string;
-  tareas_totales: number;
-  tareas_completadas: number;
-  porcentaje_cumplimiento: number;
+  valor: number;
+  hora_completada: string | null;
+  created_at: string;
+  updated_at: string;
 };
 
 export type Notificacion = {
@@ -153,18 +157,6 @@ export type Database = {
         Update: Partial<MetaProgresoHistorial>;
         Relationships: [];
       };
-      daily_tasks: {
-        Row: DailyTasks;
-        Insert: Partial<DailyTasks>;
-        Update: Partial<DailyTasks>;
-        Relationships: [];
-      };
-      disciplina_stats: {
-        Row: DisciplinaStats;
-        Insert: Partial<DisciplinaStats>;
-        Update: Partial<DisciplinaStats>;
-        Relationships: [];
-      };
       notificaciones: {
         Row: Notificacion;
         Insert: Partial<Notificacion>;
@@ -187,6 +179,18 @@ export type Database = {
         Row: VisionBoardItem;
         Insert: Partial<VisionBoardItem>;
         Update: Partial<VisionBoardItem>;
+        Relationships: [];
+      };
+      habitos: {
+        Row: Habito;
+        Insert: Partial<Habito>;
+        Update: Partial<Habito>;
+        Relationships: [];
+      };
+      habito_registros: {
+        Row: HabitoRegistro;
+        Insert: Partial<HabitoRegistro>;
+        Update: Partial<HabitoRegistro>;
         Relationships: [];
       };
     };
