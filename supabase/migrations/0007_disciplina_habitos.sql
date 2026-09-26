@@ -86,19 +86,42 @@ create trigger set_updated_at before update on public.habito_registros
 -- esta migración, queda creada pero inactiva (puede reactivarla o editarla
 -- desde la nueva pantalla).
 
-create temporary table tmp_tareas_desanidadas as
-select
-  dt.user_id,
-  dt.fecha,
-  (t ->> 'id')::uuid as tarea_id,
-  t ->> 'descripcion' as descripcion,
-  coalesce((t ->> 'orden')::int, 0) as orden,
-  coalesce((t ->> 'completada')::boolean, false) as completada,
-  nullif(t ->> 'hora_completada', '')::timestamptz as hora_completada
-from public.daily_tasks dt,
-     jsonb_array_elements(dt.tareas) as t
-where jsonb_typeof(dt.tareas) = 'array';
+-- Nota: se evita a propósito una tabla temporal (`create temporary table`)
+-- para migrar estos datos. El SQL Editor de Supabase puede repartir las
+-- distintas sentencias de un mismo script entre conexiones diferentes del
+-- connection pooler, y una tabla temporal solo vive en la conexión que la
+-- creó — la siguiente sentencia la ve como inexistente. Por eso cada
+-- `insert` de abajo repite su propio `with` completo en vez de compartir
+-- una tabla intermedia.
 
+with tareas_desanidadas as (
+  select
+    dt.user_id,
+    dt.fecha,
+    (t ->> 'id')::uuid as tarea_id,
+    t ->> 'descripcion' as descripcion,
+    coalesce((t ->> 'orden')::int, 0) as orden,
+    coalesce((t ->> 'completada')::boolean, false) as completada,
+    nullif(t ->> 'hora_completada', '')::timestamptz as hora_completada
+  from public.daily_tasks dt,
+       jsonb_array_elements(dt.tareas) as t
+  where jsonb_typeof(dt.tareas) = 'array'
+),
+ultima_por_tarea as (
+  select distinct on (tarea_id) tarea_id, user_id, descripcion, orden
+  from tareas_desanidadas
+  order by tarea_id, fecha desc
+),
+ultimo_dia_por_usuario as (
+  select user_id, max(fecha) as ultima_fecha
+  from tareas_desanidadas
+  group by user_id
+),
+activas as (
+  select distinct td.tarea_id
+  from tareas_desanidadas td
+  join ultimo_dia_por_usuario u on u.user_id = td.user_id and u.ultima_fecha = td.fecha
+)
 insert into public.habitos (id, user_id, categoria, tipo, nombre, objetivo, dias_semana, activo, orden)
 select
   u.tarea_id,
@@ -108,27 +131,23 @@ select
   coalesce(nullif(u.descripcion, ''), 'Tarea'),
   1,
   '{0,1,2,3,4,5,6}',
-  exists (
-    select 1
-    from tmp_tareas_desanidadas td
-    join (
-      select user_id, max(fecha) as ultima_fecha
-      from tmp_tareas_desanidadas
-      group by user_id
-    ) ult on ult.user_id = td.user_id and ult.ultima_fecha = td.fecha
-    where td.tarea_id = u.tarea_id
-  ),
+  exists (select 1 from activas a where a.tarea_id = u.tarea_id),
   u.orden
-from (
-  select distinct on (tarea_id) tarea_id, user_id, descripcion, orden
-  from tmp_tareas_desanidadas
-  order by tarea_id, fecha desc
-) u
+from ultima_por_tarea u
 on conflict (id) do nothing;
 
+with tareas_desanidadas as (
+  select
+    dt.user_id,
+    dt.fecha,
+    (t ->> 'id')::uuid as tarea_id,
+    coalesce((t ->> 'completada')::boolean, false) as completada,
+    nullif(t ->> 'hora_completada', '')::timestamptz as hora_completada
+  from public.daily_tasks dt,
+       jsonb_array_elements(dt.tareas) as t
+  where jsonb_typeof(dt.tareas) = 'array'
+)
 insert into public.habito_registros (habito_id, user_id, fecha, valor, hora_completada)
 select tarea_id, user_id, fecha, case when completada then 1 else 0 end, hora_completada
-from tmp_tareas_desanidadas
+from tareas_desanidadas
 on conflict (habito_id, fecha) do nothing;
-
-drop table tmp_tareas_desanidadas;
