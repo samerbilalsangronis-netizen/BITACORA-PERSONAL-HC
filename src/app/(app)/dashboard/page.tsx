@@ -2,6 +2,7 @@ import Link from "next/link";
 import { NotebookPen, Target, Flame, Percent, Wallet } from "lucide-react";
 import { requireUser } from "@/lib/session";
 import { StatCard } from "@/components/ui/StatCard";
+import { FormError } from "@/components/ui/FormMessage";
 import { DisciplinaAreaChart } from "@/components/dashboard/DisciplinaAreaChart";
 import { HeatmapCalendar } from "@/components/dashboard/HeatmapCalendar";
 import { DashboardCalendar } from "@/components/dashboard/DashboardCalendar";
@@ -51,6 +52,7 @@ export default async function DashboardPage() {
   const transaccionesMes = (transaccionesMesRes.data ?? []) as Transaccion[];
   const balanceMes = transaccionesMes.reduce((s, t) => s + (t.tipo === "ingreso" ? t.monto : -t.monto), 0);
   const metasConFecha = (metasFechaRes.data ?? []) as { id: string; titulo: string; fecha_objetivo: string }[];
+  const loadError = habitosRes.error?.message ?? registrosRes.error?.message;
 
   const statsHoy = stats.find((s) => s.fecha === today);
   const totalTareas = statsHoy?.tareas_totales ?? 0;
@@ -64,6 +66,8 @@ export default async function DashboardPage() {
         <h1 className="text-xl font-semibold">Hola, {profile?.nombre || "trader"} 👋</h1>
         <p className="text-sm text-muted">Este es tu resumen de disciplina y bitácora.</p>
       </div>
+
+      <FormError message={loadError} />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
         <StatCard label="Disciplina hoy" value={`${Math.round(porcentajeHoy)}%`} icon={Percent} hint={`${completadasHoy}/${totalTareas} tareas`} />

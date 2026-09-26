@@ -23,7 +23,12 @@ export function estaProgramado(habito: Pick<Habito, "dias_semana">, fechaISO: st
 }
 
 export function estaCreadoPara(habito: Pick<Habito, "created_at">, fechaISO: string): boolean {
-  return habito.created_at.slice(0, 10) <= fechaISO;
+  // `created_at` es un timestamp UTC; `fechaISO` es el día calendario del
+  // usuario. Si el usuario está en una zona horaria detrás de UTC, un
+  // hábito creado de noche puede quedar fechado "mañana" en UTC — sin este
+  // margen de un día, no aparecería en el propio día en que se creó.
+  const creadoISO = daysAgoISO(1, habito.created_at.slice(0, 10));
+  return creadoISO <= fechaISO;
 }
 
 export function estaCumplido(habito: Pick<Habito, "objetivo">, valor: number): boolean {

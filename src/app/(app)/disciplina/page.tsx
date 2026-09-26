@@ -1,5 +1,6 @@
 import { requireUser } from "@/lib/session";
 import { DisciplinaTabs } from "@/components/disciplina/DisciplinaTabs";
+import { FormError } from "@/components/ui/FormMessage";
 import { daysAgoISO } from "@/lib/utils";
 import { todayISOForUser } from "@/lib/server-date";
 import type { Habito, HabitoRegistro } from "@/lib/supabase/types";
@@ -15,7 +16,7 @@ export default async function DisciplinaPage({
 
   const { supabase, user } = await requireUser();
 
-  const [{ data: habitosData }, { data: registrosData }] = await Promise.all([
+  const [habitosRes, registrosRes] = await Promise.all([
     supabase.from("habitos").select("*").eq("user_id", user.id).order("categoria").order("orden"),
     supabase
       .from("habito_registros")
@@ -25,8 +26,9 @@ export default async function DisciplinaPage({
       .lte("fecha", today),
   ]);
 
-  const habitos = (habitosData ?? []) as Habito[];
-  const registros = (registrosData ?? []) as HabitoRegistro[];
+  const habitos = (habitosRes.data ?? []) as Habito[];
+  const registros = (registrosRes.data ?? []) as HabitoRegistro[];
+  const loadError = habitosRes.error?.message ?? registrosRes.error?.message;
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -34,6 +36,7 @@ export default async function DisciplinaPage({
         <h1 className="text-xl font-semibold">Disciplina diaria</h1>
         <p className="text-sm text-muted">Tareas y hábitos programados por día, con racha y objetivos por ítem.</p>
       </div>
+      <FormError message={loadError} />
       <DisciplinaTabs habitos={habitos} registros={registros} fecha={fecha} today={today} />
     </div>
   );
