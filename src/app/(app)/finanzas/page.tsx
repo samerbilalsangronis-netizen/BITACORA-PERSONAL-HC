@@ -2,11 +2,11 @@ import { Suspense } from "react";
 import { TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import { requireUser } from "@/lib/session";
 import { StatCard } from "@/components/ui/StatCard";
-import { FinanzasClient } from "@/components/finanzas/FinanzasClient";
+import { FinanzasResumen } from "@/components/finanzas/FinanzasResumen";
 import { FinanzasFilters } from "@/components/finanzas/FinanzasFilters";
-import { TransaccionRow } from "@/components/finanzas/TransaccionRow";
+import { TransaccionesColumna } from "@/components/finanzas/TransaccionesColumna";
 import { FinanzasBarChart } from "@/components/finanzas/FinanzasBarChart";
-import type { CategoriaPersonalizada, Transaccion, TipoTransaccion } from "@/lib/supabase/types";
+import type { CategoriaPersonalizada, Transaccion } from "@/lib/supabase/types";
 import { daysAgoISO } from "@/lib/utils";
 import { todayISOForUser } from "@/lib/server-date";
 
@@ -15,14 +15,13 @@ const formatoMonto = new Intl.NumberFormat("es-ES", { style: "currency", currenc
 export default async function FinanzasPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tipo?: string; categoria?: string; desde?: string; hasta?: string }>;
+  searchParams: Promise<{ categoria?: string; desde?: string; hasta?: string }>;
 }) {
-  const { tipo, categoria, desde, hasta } = await searchParams;
+  const { categoria, desde, hasta } = await searchParams;
   const { supabase, user } = await requireUser();
   const today = await todayISOForUser();
 
   let query = supabase.from("transacciones").select("*").eq("user_id", user.id);
-  if (tipo) query = query.eq("tipo", tipo as TipoTransaccion);
   if (categoria) query = query.eq("categoria", categoria);
   if (desde) query = query.gte("fecha", desde);
   if (hasta) query = query.lte("fecha", hasta);
@@ -42,6 +41,9 @@ export default async function FinanzasPage({
   const todas = (chartData ?? []) as Transaccion[];
   const categoriasPersonalizadas = (categoriasData ?? []) as CategoriaPersonalizada[];
 
+  const ingresos = transacciones.filter((t) => t.tipo === "ingreso");
+  const gastos = transacciones.filter((t) => t.tipo === "egreso");
+
   const inicioMesISO = today.slice(0, 8) + "01";
   const delMes = todas.filter((t) => t.fecha >= inicioMesISO);
   const ingresosMes = delMes.filter((t) => t.tipo === "ingreso").reduce((s, t) => s + t.monto, 0);
@@ -49,7 +51,7 @@ export default async function FinanzasPage({
   const balanceMes = ingresosMes - egresosMes;
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="mx-auto max-w-6xl space-y-6">
       <div>
         <h1 className="text-xl font-semibold">Gestor financiero</h1>
         <p className="text-sm text-muted">Registra tus ingresos y egresos para saber en qué usas tu dinero.</p>
@@ -62,7 +64,7 @@ export default async function FinanzasPage({
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <FinanzasClient transacciones={todas} categoriasPersonalizadas={categoriasPersonalizadas} today={today} />
+        <FinanzasResumen transacciones={todas} categoriasPersonalizadas={categoriasPersonalizadas} today={today} />
         <FinanzasBarChart transacciones={todas} />
       </div>
 
@@ -70,17 +72,20 @@ export default async function FinanzasPage({
         <FinanzasFilters />
       </Suspense>
 
-      {transacciones.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted">
-          No hay transacciones que coincidan con tu búsqueda.
-        </p>
-      ) : (
-        <ul className="divide-y divide-border rounded-xl border border-border bg-surface px-4">
-          {transacciones.map((t, i) => (
-            <TransaccionRow key={t.id} transaccion={t} categoriasPersonalizadas={categoriasPersonalizadas} index={i} />
-          ))}
-        </ul>
-      )}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <TransaccionesColumna
+          tipo="ingreso"
+          transacciones={ingresos}
+          categoriasPersonalizadas={categoriasPersonalizadas}
+          today={today}
+        />
+        <TransaccionesColumna
+          tipo="egreso"
+          transacciones={gastos}
+          categoriasPersonalizadas={categoriasPersonalizadas}
+          today={today}
+        />
+      </div>
     </div>
   );
 }

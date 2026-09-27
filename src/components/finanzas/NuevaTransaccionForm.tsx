@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { FormError, FormSuccess } from "@/components/ui/FormMessage";
 import {
-  TIPOS_TRANSACCION,
   ICONOS_DISPONIBLES,
   ICONO_MAP,
   COLORES_DISPONIBLES,
@@ -42,17 +41,18 @@ function opcionesPara(tipo: TipoTransaccion, customCats: CategoriaPersonalizada[
 }
 
 export function NuevaTransaccionForm({
+  tipo,
   categoriasPersonalizadas,
   today,
   onClose,
 }: {
+  tipo: TipoTransaccion;
   categoriasPersonalizadas: CategoriaPersonalizada[];
   today: string;
   onClose: () => void;
 }) {
-  const [tipo, setTipo] = useState<TipoTransaccion>("egreso");
   const [customCats, setCustomCats] = useState(categoriasPersonalizadas);
-  const [categoria, setCategoria] = useState(categoriasPara("egreso")[0]);
+  const [categoria, setCategoria] = useState(categoriasPara(tipo)[0]);
   const [fecha, setFecha] = useState(today);
   const [showCalendar, setShowCalendar] = useState(false);
 
@@ -67,18 +67,13 @@ export function NuevaTransaccionForm({
   const [state, formAction, pending] = useActionState(createTransaccion, initialState);
 
   const opciones = useMemo(() => opcionesPara(tipo, customCats), [tipo, customCats]);
+  const esIngreso = tipo === "ingreso";
 
   const chips = [
     { label: "Hoy", value: today },
     { label: "Ayer", value: daysAgoISO(1, today) },
     { label: "Hace 2 días", value: daysAgoISO(2, today) },
   ];
-
-  function changeTipo(t: TipoTransaccion) {
-    setTipo(t);
-    setCategoria(opcionesPara(t, customCats)[0]?.value ?? "otro");
-    setCreating(false);
-  }
 
   function handleCrearCategoria() {
     if (!nuevoNombre.trim()) {
@@ -101,39 +96,19 @@ export function NuevaTransaccionForm({
   }
 
   return (
-    <Card>
+    <Card className={cn("border-2", esIngreso ? "border-accent/30" : "border-danger/30")}>
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-sm font-semibold">Nueva transacción</h3>
+        <h3 className="text-sm font-semibold">{esIngreso ? "Nuevo ingreso" : "Nuevo gasto"}</h3>
         <button onClick={onClose} className="text-muted hover:text-foreground" aria-label="Cerrar">
           <X size={16} />
         </button>
       </div>
       <form action={formAction} className="space-y-4">
-        <div className="flex gap-1 rounded-lg bg-surface-muted p-1 text-sm">
-          {TIPOS_TRANSACCION.map((t) => (
-            <label
-              key={t.value}
-              className={cn(
-                "flex-1 cursor-pointer rounded-md py-1.5 text-center font-medium transition-colors",
-                tipo === t.value ? "bg-surface border border-border text-foreground" : "text-muted"
-              )}
-            >
-              <input
-                type="radio"
-                name="tipo"
-                value={t.value}
-                checked={tipo === t.value}
-                onChange={() => changeTipo(t.value)}
-                className="sr-only"
-              />
-              {t.label}
-            </label>
-          ))}
-        </div>
+        <input type="hidden" name="tipo" value={tipo} />
 
         <div>
-          <Label htmlFor="monto">Monto</Label>
-          <Input id="monto" name="monto" type="number" min={0} step="0.01" required placeholder="0.00" className="text-lg" />
+          <Label htmlFor={`monto-${tipo}`}>Monto</Label>
+          <Input id={`monto-${tipo}`} name="monto" type="number" min={0} step="0.01" required placeholder="0.00" className="text-lg" />
         </div>
 
         <div>
@@ -274,8 +249,8 @@ export function NuevaTransaccionForm({
         </div>
 
         <div>
-          <Label htmlFor="descripcion">Comentario (opcional)</Label>
-          <Textarea id="descripcion" name="descripcion" rows={2} placeholder="Detalle de la transacción…" />
+          <Label htmlFor={`descripcion-${tipo}`}>Comentario (opcional)</Label>
+          <Textarea id={`descripcion-${tipo}`} name="descripcion" rows={2} placeholder="Detalle de la transacción…" />
         </div>
 
         <FormError message={state.error} />

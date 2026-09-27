@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
@@ -72,12 +72,10 @@ export function FinanzasResumen({
   transacciones,
   categoriasPersonalizadas,
   today,
-  onAdd,
 }: {
   transacciones: Transaccion[];
   categoriasPersonalizadas: CategoriaPersonalizada[];
   today: string;
-  onAdd: () => void;
 }) {
   const [tipo, setTipo] = useState<TipoTransaccion>("egreso");
   const [periodo, setPeriodo] = useState<Periodo>("semana");
@@ -246,14 +244,6 @@ export function FinanzasResumen({
             <p className="text-xl font-semibold tabular-nums">{formatoMonto.format(total)}</p>
           )}
         </div>
-        <button
-          type="button"
-          onClick={onAdd}
-          aria-label="Nueva transacción"
-          className="absolute bottom-1 right-1 flex h-11 w-11 items-center justify-center rounded-full bg-accent text-white shadow-md transition-transform duration-150 hover:opacity-90 active:scale-95"
-        >
-          <Plus size={20} />
-        </button>
       </div>
 
       {data.length > 0 && (

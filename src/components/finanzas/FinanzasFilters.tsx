@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import { Input, Select } from "@/components/ui/Input";
-import { TIPOS_TRANSACCION, CATEGORIAS_INGRESO, CATEGORIAS_EGRESO } from "@/lib/constants";
+import { CATEGORIAS_INGRESO, CATEGORIAS_EGRESO } from "@/lib/constants";
 import { labelize } from "@/lib/utils";
 
 const TODAS_CATEGORIAS = Array.from(new Set([...CATEGORIAS_INGRESO, ...CATEGORIAS_EGRESO])).sort();
@@ -23,15 +23,7 @@ export function FinanzasFilters() {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-      <Select defaultValue={searchParams.get("tipo") ?? ""} onChange={(e) => updateParam("tipo", e.target.value)}>
-        <option value="">Ingresos y egresos</option>
-        {TIPOS_TRANSACCION.map((t) => (
-          <option key={t.value} value={t.value}>
-            {t.label}
-          </option>
-        ))}
-      </Select>
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
       <Select
         defaultValue={searchParams.get("categoria") ?? ""}
         onChange={(e) => updateParam("categoria", e.target.value)}
