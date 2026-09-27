@@ -53,7 +53,7 @@ export function AvatarUpload({
       .upload(path, file, { upsert: true, contentType: file.type, cacheControl: "3600" });
 
     if (uploadError) {
-      setError("No se pudo subir la imagen. Intenta de nuevo.");
+      setError(uploadError.message || "No se pudo subir la imagen. Intenta de nuevo.");
       setUploading(false);
       return;
     }
@@ -69,7 +69,7 @@ export function AvatarUpload({
     setUploading(false);
 
     if (updateError) {
-      setError("La imagen se subió pero no se pudo guardar en tu perfil.");
+      setError(updateError.message || "La imagen se subió pero no se pudo guardar en tu perfil.");
       return;
     }
 

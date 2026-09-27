@@ -54,7 +54,7 @@ export function MetaLogradaCard({ meta, userId }: { meta: Meta; userId: string }
       .upload(path, file, { upsert: true, contentType: file.type, cacheControl: "3600" });
 
     if (uploadError) {
-      setError("No se pudo subir la imagen. Intenta de nuevo.");
+      setError(uploadError.message || "No se pudo subir la imagen. Intenta de nuevo.");
       setUploading(false);
       return;
     }
@@ -67,7 +67,7 @@ export function MetaLogradaCard({ meta, userId }: { meta: Meta; userId: string }
     setUploading(false);
 
     if (updateError) {
-      setError("La imagen se subió pero no se pudo guardar.");
+      setError(updateError.message || "La imagen se subió pero no se pudo guardar.");
       return;
     }
 

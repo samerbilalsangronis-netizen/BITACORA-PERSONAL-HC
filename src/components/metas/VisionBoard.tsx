@@ -41,7 +41,7 @@ export function VisionBoard({ items, userId }: { items: VisionBoardItem[]; userI
       .upload(path, file, { contentType: file.type, cacheControl: "3600" });
 
     if (uploadError) {
-      setError("No se pudo subir la imagen. Intenta de nuevo.");
+      setError(uploadError.message || "No se pudo subir la imagen. Intenta de nuevo.");
       setUploading(false);
       return;
     }
