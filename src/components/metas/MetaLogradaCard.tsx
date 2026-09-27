@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, Loader2 } from "lucide-react";
+import { Camera, Loader2, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { formatDate } from "@/lib/utils";
+import { deleteMeta } from "@/lib/actions/metas";
+import { cn, formatDate } from "@/lib/utils";
 import type { Meta } from "@/lib/supabase/types";
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024;
@@ -14,7 +15,16 @@ export function MetaLogradaCard({ meta, userId }: { meta: Meta; userId: string }
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string>();
   const inputRef = useRef<HTMLInputElement>(null);
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
+
+  function onDelete() {
+    if (!confirm(`¿Eliminar "${meta.titulo}" y su historial de progreso?`)) return;
+    startTransition(async () => {
+      await deleteMeta(meta.id);
+      router.refresh();
+    });
+  }
 
   async function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -66,25 +76,41 @@ export function MetaLogradaCard({ meta, userId }: { meta: Meta; userId: string }
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-surface transition-colors duration-200">
-      <button
-        type="button"
-        onClick={() => inputRef.current?.click()}
-        className="group relative block aspect-[4/3] w-full bg-surface-muted"
-        aria-label="Subir foto de esta meta"
-      >
-        {preview ? (
-          // eslint-disable-next-line @next/next/no-img-element -- imagen viene de Supabase Storage (dominio dinámico por proyecto)
-          <img src={preview} alt={meta.titulo} className="h-full w-full object-cover" />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-muted">
-            <Camera size={22} />
-          </div>
-        )}
-        <span className="absolute inset-0 flex items-center justify-center bg-black/0 text-transparent transition-all duration-200 group-hover:bg-black/40 group-hover:text-white">
-          {uploading ? <Loader2 size={20} className="animate-spin" /> : <Camera size={20} />}
-        </span>
-      </button>
+    <div
+      className={cn(
+        "overflow-hidden rounded-xl border border-border bg-surface transition-colors duration-200",
+        isPending && "opacity-60"
+      )}
+    >
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          className="group relative block aspect-[4/3] w-full bg-surface-muted"
+          aria-label="Subir foto de esta meta"
+        >
+          {preview ? (
+            // eslint-disable-next-line @next/next/no-img-element -- imagen viene de Supabase Storage (dominio dinámico por proyecto)
+            <img src={preview} alt={meta.titulo} className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-muted">
+              <Camera size={22} />
+            </div>
+          )}
+          <span className="absolute inset-0 flex items-center justify-center bg-black/0 text-transparent transition-all duration-200 group-hover:bg-black/40 group-hover:text-white">
+            {uploading ? <Loader2 size={20} className="animate-spin" /> : <Camera size={20} />}
+          </span>
+        </button>
+        <button
+          type="button"
+          onClick={onDelete}
+          disabled={isPending}
+          aria-label="Eliminar meta"
+          className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-danger"
+        >
+          <X size={14} />
+        </button>
+      </div>
       <div className="p-3">
         <h3 className="text-sm font-semibold">{meta.titulo}</h3>
         {meta.descripcion && <p className="mt-0.5 line-clamp-2 text-xs text-muted">{meta.descripcion}</p>}

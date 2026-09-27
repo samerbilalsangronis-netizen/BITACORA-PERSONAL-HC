@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, X } from "lucide-react";
 import type { Meta, MetaProgresoHistorial, EstadoMeta } from "@/lib/supabase/types";
 import { updateProgreso, updateEstado, deleteMeta } from "@/lib/actions/metas";
 import { createClient } from "@/lib/supabase/client";
@@ -86,7 +86,7 @@ export function MetaCard({ meta }: { meta: Meta }) {
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted hover:bg-danger/10 hover:text-danger"
           aria-label="Eliminar meta"
         >
-          <Trash2 size={16} />
+          <X size={16} />
         </button>
       </div>
 
