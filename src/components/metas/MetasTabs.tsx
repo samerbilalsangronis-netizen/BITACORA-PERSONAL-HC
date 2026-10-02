@@ -5,7 +5,7 @@ import { MetaCard } from "@/components/metas/MetaCard";
 import { MetaLogradaCard } from "@/components/metas/MetaLogradaCard";
 import { VisionBoard } from "@/components/metas/VisionBoard";
 import { cn } from "@/lib/utils";
-import type { Meta, VisionBoardItem } from "@/lib/supabase/types";
+import type { Meta, MetaObjetivo, MetaObjetivoAvance, VisionBoardItem } from "@/lib/supabase/types";
 
 type Tab = "activas" | "logradas" | "vision";
 
@@ -13,10 +13,16 @@ export function MetasTabs({
   metas,
   visionItems,
   userId,
+  objetivos,
+  avances,
+  today,
 }: {
   metas: Meta[];
   visionItems: VisionBoardItem[];
   userId: string;
+  objetivos: MetaObjetivo[];
+  avances: MetaObjetivoAvance[];
+  today: string;
 }) {
   const [tab, setTab] = useState<Tab>("activas");
 
@@ -61,7 +67,12 @@ export function MetasTabs({
                 <div className="space-y-3">
                   {activas.map((m, i) => (
                     <div key={m.id} className="animate-fade-in-up" style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>
-                      <MetaCard meta={m} />
+                      <MetaCard
+                        meta={m}
+                        objetivos={objetivos.filter((o) => o.meta_id === m.id)}
+                        avances={avances}
+                        today={today}
+                      />
                     </div>
                   ))}
                 </div>
@@ -73,7 +84,12 @@ export function MetasTabs({
                 <div className="space-y-3">
                   {pausadas.map((m, i) => (
                     <div key={m.id} className="animate-fade-in-up" style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}>
-                      <MetaCard meta={m} />
+                      <MetaCard
+                        meta={m}
+                        objetivos={objetivos.filter((o) => o.meta_id === m.id)}
+                        avances={avances}
+                        today={today}
+                      />
                     </div>
                   ))}
                 </div>

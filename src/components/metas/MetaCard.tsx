@@ -3,9 +3,10 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
-import type { Meta, MetaProgresoHistorial, EstadoMeta } from "@/lib/supabase/types";
-import { updateProgreso, updateEstado, deleteMeta } from "@/lib/actions/metas";
+import type { Meta, MetaObjetivo, MetaObjetivoAvance, MetaProgresoHistorial, EstadoMeta } from "@/lib/supabase/types";
+import { updateEstado, deleteMeta } from "@/lib/actions/metas";
 import { createClient } from "@/lib/supabase/client";
+import { ObjetivosPanel } from "@/components/metas/ObjetivosPanel";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Select } from "@/components/ui/Input";
@@ -19,21 +20,22 @@ const estadoTone: Record<EstadoMeta, "success" | "primary" | "warning"> = {
   pausada: "warning",
 };
 
-export function MetaCard({ meta }: { meta: Meta }) {
-  const [progreso, setProgreso] = useState(meta.progreso);
+export function MetaCard({
+  meta,
+  objetivos,
+  avances,
+  today,
+}: {
+  meta: Meta;
+  objetivos: MetaObjetivo[];
+  avances: MetaObjetivoAvance[];
+  today: string;
+}) {
   const [estado, setEstado] = useState(meta.estado);
   const [historial, setHistorial] = useState<MetaProgresoHistorial[] | null>(null);
   const [showHistorial, setShowHistorial] = useState(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
-
-  function commitProgreso(value: number) {
-    setProgreso(value);
-    startTransition(async () => {
-      await updateProgreso(meta.id, value);
-      router.refresh();
-    });
-  }
 
   function changeEstado(value: EstadoMeta) {
     setEstado(value);
@@ -90,26 +92,7 @@ export function MetaCard({ meta }: { meta: Meta }) {
         </button>
       </div>
 
-      <div className="mt-4 flex items-center gap-3">
-        <div className="h-2 flex-1 overflow-hidden rounded-full bg-surface-muted">
-          <div
-            className={cn("h-full rounded-full", progreso >= 100 ? "bg-accent" : "bg-primary")}
-            style={{ width: `${progreso}%` }}
-          />
-        </div>
-        <span className="w-10 text-right text-sm font-semibold tabular-nums">{progreso}%</span>
-      </div>
-      <input
-        type="range"
-        min={0}
-        max={100}
-        step={5}
-        value={progreso}
-        onChange={(e) => setProgreso(Number(e.target.value))}
-        onMouseUp={(e) => commitProgreso(Number((e.target as HTMLInputElement).value))}
-        onTouchEnd={(e) => commitProgreso(Number((e.target as HTMLInputElement).value))}
-        className="mt-2 w-full accent-[var(--primary)]"
-      />
+      <ObjetivosPanel meta={meta} objetivosIniciales={objetivos} avances={avances} today={today} />
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
         <Select

@@ -5,6 +5,9 @@ export type Theme = "dark" | "light";
 export type TipoTransaccion = "ingreso" | "egreso";
 export type CategoriaHabito = "tarea" | "habito";
 export type TipoHabito = "check" | "contador";
+export type TipoObjetivo = "frecuencia" | "hito" | "acumulado";
+export type PeriodoObjetivo = "dia" | "semana" | "mes";
+export type OrigenObjetivo = "agente" | "usuario";
 
 // Nota: estos tipos usan `type` (no `interface`) a propósito. Un `interface`
 // no satisface el `extends Record<string, unknown>` que exige el generic
@@ -94,6 +97,43 @@ export type HabitoRegistro = {
   hora_completada: string | null;
   created_at: string;
   updated_at: string;
+};
+
+export type MetaObjetivo = {
+  id: string;
+  meta_id: string;
+  user_id: string;
+  nombre: string;
+  tipo: TipoObjetivo;
+  cantidad_objetivo: number;
+  periodo: PeriodoObjetivo | null;
+  unidad: string;
+  peso: number;
+  origen: OrigenObjetivo;
+  orden: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type MetaRegistro = {
+  id: string;
+  meta_id: string;
+  user_id: string;
+  fecha: string;
+  texto: string;
+  created_at: string;
+};
+
+export type MetaObjetivoAvance = {
+  id: string;
+  objetivo_id: string;
+  meta_id: string;
+  user_id: string;
+  registro_id: string | null;
+  fecha: string;
+  cantidad: number;
+  nota: string;
+  created_at: string;
 };
 
 export type Notificacion = {
@@ -191,6 +231,24 @@ export type Database = {
         Row: HabitoRegistro;
         Insert: Partial<HabitoRegistro>;
         Update: Partial<HabitoRegistro>;
+        Relationships: [];
+      };
+      meta_objetivos: {
+        Row: MetaObjetivo;
+        Insert: Partial<MetaObjetivo>;
+        Update: Partial<MetaObjetivo>;
+        Relationships: [];
+      };
+      meta_registros: {
+        Row: MetaRegistro;
+        Insert: Partial<MetaRegistro>;
+        Update: Partial<MetaRegistro>;
+        Relationships: [];
+      };
+      meta_objetivo_avances: {
+        Row: MetaObjetivoAvance;
+        Insert: Partial<MetaObjetivoAvance>;
+        Update: Partial<MetaObjetivoAvance>;
         Relationships: [];
       };
     };
