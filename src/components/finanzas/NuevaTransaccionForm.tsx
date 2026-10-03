@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useMemo, useState, useTransition } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Calendar as CalendarIcon, Plus, X } from "lucide-react";
 import { createTransaccion } from "@/lib/actions/finanzas";
@@ -65,6 +65,16 @@ export function NuevaTransaccionForm({
 
   const router = useRouter();
   const [state, formAction, pending] = useActionState(createTransaccion, initialState);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // El router cache de Next no siempre se invalida solo con revalidatePath
+  // en la ruta actual: forzamos el refresh para que los totales/balances
+  // se vean al instante en vez de requerir una recarga manual.
+  useEffect(() => {
+    if (!state.success) return;
+    router.refresh();
+    formRef.current?.reset();
+  }, [state.success, router]);
 
   const opciones = useMemo(() => opcionesPara(tipo, customCats), [tipo, customCats]);
   const esIngreso = tipo === "ingreso";
@@ -103,7 +113,7 @@ export function NuevaTransaccionForm({
           <X size={16} />
         </button>
       </div>
-      <form action={formAction} className="space-y-4">
+      <form ref={formRef} action={formAction} className="space-y-4">
         <input type="hidden" name="tipo" value={tipo} />
 
         <div>

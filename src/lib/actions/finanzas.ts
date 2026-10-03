@@ -36,7 +36,7 @@ export async function createTransaccion(_prevState: ActionState, formData: FormD
     monto,
   });
 
-  if (error) return { error: "No se pudo registrar la transacción." };
+  if (error) return { error: error.message || "No se pudo registrar la transacción." };
 
   revalidatePath("/finanzas");
   revalidatePath("/dashboard");
@@ -51,7 +51,7 @@ export async function deleteTransaccion(id: string) {
   if (!user) return { error: "No autenticado." };
 
   const { error } = await supabase.from("transacciones").delete().eq("id", id).eq("user_id", user.id);
-  if (error) return { error: "No se pudo eliminar la transacción." };
+  if (error) return { error: error.message || "No se pudo eliminar la transacción." };
 
   revalidatePath("/finanzas");
   revalidatePath("/dashboard");
