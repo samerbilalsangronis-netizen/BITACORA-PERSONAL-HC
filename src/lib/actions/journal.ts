@@ -30,7 +30,7 @@ export async function createEntry(_prevState: ActionState, formData: FormData): 
     .select("id")
     .single();
 
-  if (error || !data) return { error: "No se pudo crear la entrada." };
+  if (error || !data) return { error: error?.message || "No se pudo crear la entrada." };
 
   revalidatePath("/journal");
   revalidatePath("/dashboard");
@@ -57,7 +57,7 @@ export async function updateEntry(id: string, _prevState: ActionState, formData:
     .eq("id", id)
     .eq("user_id", user.id);
 
-  if (error) return { error: "No se pudo actualizar la entrada." };
+  if (error) return { error: error.message || "No se pudo actualizar la entrada." };
 
   revalidatePath("/journal");
   revalidatePath(`/journal/${id}`);
@@ -73,7 +73,7 @@ export async function deleteEntry(id: string) {
   if (!user) return { error: "No autenticado." };
 
   const { error } = await supabase.from("journal_entries").delete().eq("id", id).eq("user_id", user.id);
-  if (error) return { error: "No se pudo eliminar la entrada." };
+  if (error) return { error: error.message || "No se pudo eliminar la entrada." };
 
   revalidatePath("/journal");
   revalidatePath("/dashboard");
