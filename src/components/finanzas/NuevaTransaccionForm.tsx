@@ -124,16 +124,19 @@ export function NuevaTransaccionForm({
           <Input id={`monto-${tipo}`} name="monto" type="number" min={0} step="0.01" required placeholder="0.00" className="text-lg" />
         </div>
 
-        {cuentas.length > 0 && (
+        {cuentas.length > 0 ? (
           <div>
-            <Label htmlFor={`cuenta-${tipo}`}>Cuenta (opcional)</Label>
+            <Label htmlFor={`cuenta-${tipo}`}>{esIngreso ? "¿A qué cuenta entra?" : "¿De qué cuenta sale?"}</Label>
             <Select
               id={`cuenta-${tipo}`}
               name="cuenta_id"
+              required
               value={cuentaId}
               onChange={(e) => setCuentaId(e.target.value)}
             >
-              <option value="">Sin cuenta asignada</option>
+              <option value="" disabled>
+                Elige una cuenta…
+              </option>
               {cuentas.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.nombre}
@@ -141,6 +144,11 @@ export function NuevaTransaccionForm({
               ))}
             </Select>
           </div>
+        ) : (
+          <p className="rounded-lg border border-dashed border-border p-3 text-xs text-muted">
+            Aún no tienes cuentas creadas. Agrega una desde el panel &quot;Capital total&quot; para poder asignar tus
+            transacciones.
+          </p>
         )}
 
         <div>

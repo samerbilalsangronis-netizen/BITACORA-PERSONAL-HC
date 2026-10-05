@@ -28,6 +28,22 @@ export async function createTransaccion(_prevState: ActionState, formData: FormD
   } = await supabase.auth.getUser();
   if (!user) return { error: "No autenticado." };
 
+  // La cuenta es obligatoria en cuanto el usuario tiene al menos una creada:
+  // la idea es llevar un control claro de en qué cuenta está cada monto.
+  const { data: cuentasUsuario } = await supabase.from("cuentas").select("id").eq("user_id", user.id).limit(1);
+  if ((cuentasUsuario?.length ?? 0) > 0 && !cuentaId) {
+    return { error: tipo === "ingreso" ? "Elige a qué cuenta entra este ingreso." : "Elige de qué cuenta sale este gasto." };
+  }
+  if (cuentaId) {
+    const { data: cuentaValida } = await supabase
+      .from("cuentas")
+      .select("id")
+      .eq("id", cuentaId)
+      .eq("user_id", user.id)
+      .maybeSingle();
+    if (!cuentaValida) return { error: "La cuenta seleccionada no es válida." };
+  }
+
   const { error } = await supabase.from("transacciones").insert({
     user_id: user.id,
     tipo,
