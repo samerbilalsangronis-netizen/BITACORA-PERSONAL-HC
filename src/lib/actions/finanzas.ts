@@ -17,6 +17,7 @@ export async function createTransaccion(_prevState: ActionState, formData: FormD
   const descripcion = String(formData.get("descripcion") || "").trim();
   const fecha = String(formData.get("fecha") || "");
   const monto = parseMonto(formData.get("monto"));
+  const cuentaId = String(formData.get("cuenta_id") || "") || null;
 
   if (monto === null) return { error: "Ingresa un monto válido." };
   if (!fecha) return { error: "Selecciona una fecha." };
@@ -34,9 +35,20 @@ export async function createTransaccion(_prevState: ActionState, formData: FormD
     descripcion,
     fecha,
     monto,
+    cuenta_id: cuentaId,
   });
 
   if (error) return { error: error.message || "No se pudo registrar la transacción." };
+
+  if (cuentaId && monto > 0) {
+    const delta = tipo === "ingreso" ? monto : -monto;
+    const { error: saldoError } = await supabase.rpc("ajustar_saldo_cuenta", {
+      p_cuenta_id: cuentaId,
+      p_delta: delta,
+      p_user_id: user.id,
+    });
+    if (saldoError) return { error: `Transacción guardada, pero no se pudo actualizar el saldo: ${saldoError.message}` };
+  }
 
   revalidatePath("/finanzas");
   revalidatePath("/dashboard");
@@ -50,8 +62,24 @@ export async function deleteTransaccion(id: string) {
   } = await supabase.auth.getUser();
   if (!user) return { error: "No autenticado." };
 
+  const { data: transaccion } = await supabase
+    .from("transacciones")
+    .select("tipo, monto, cuenta_id")
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .single();
+
   const { error } = await supabase.from("transacciones").delete().eq("id", id).eq("user_id", user.id);
   if (error) return { error: error.message || "No se pudo eliminar la transacción." };
+
+  if (transaccion?.cuenta_id && transaccion.monto > 0) {
+    const delta = transaccion.tipo === "ingreso" ? -transaccion.monto : transaccion.monto;
+    await supabase.rpc("ajustar_saldo_cuenta", {
+      p_cuenta_id: transaccion.cuenta_id,
+      p_delta: delta,
+      p_user_id: user.id,
+    });
+  }
 
   revalidatePath("/finanzas");
   revalidatePath("/dashboard");

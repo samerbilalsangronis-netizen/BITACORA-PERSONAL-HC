@@ -25,9 +25,10 @@ import {
   TrendingUp,
   Laptop,
   Repeat,
+  Landmark,
   type LucideIcon,
 } from "lucide-react";
-import type { Tipo, TipoMeta, EstadoMeta, TipoTransaccion, CategoriaPersonalizada } from "@/lib/supabase/types";
+import type { Tipo, TipoMeta, EstadoMeta, TipoTransaccion, TipoCuenta, CategoriaPersonalizada } from "@/lib/supabase/types";
 
 export const EMOCIONES = [
   "ansiedad",
@@ -136,6 +137,7 @@ export const ICONO_MAP: Record<string, LucideIcon> = {
   tendencia: TrendingUp,
   laptop: Laptop,
   repetir: Repeat,
+  banco: Landmark,
   otro: CircleHelp,
 };
 
@@ -161,6 +163,7 @@ export const ICONOS_DISPONIBLES: { key: string; label: string }[] = [
   { key: "herramienta", label: "Mantenimiento" },
   { key: "musica", label: "Música" },
   { key: "mascota", label: "Mascotas" },
+  { key: "banco", label: "Banco" },
   { key: "otro", label: "Otro" },
 ];
 
@@ -230,3 +233,27 @@ export function resolveCategoriaVisual(
     color: CATEGORIA_COLOR[categoria] ?? CATEGORIA_COLOR.otro,
   };
 }
+
+export const TIPOS_CUENTA: { value: TipoCuenta; label: string }[] = [
+  { value: "banco", label: "Banco" },
+  { value: "efectivo", label: "Efectivo" },
+  { value: "broker", label: "Broker" },
+  { value: "billetera_digital", label: "Billetera digital" },
+  { value: "otro", label: "Otro" },
+];
+
+export const TIPO_CUENTA_ICONO: Record<TipoCuenta, string> = {
+  banco: "banco",
+  efectivo: "billetera",
+  broker: "tendencia",
+  billetera_digital: "telefono",
+  otro: "otro",
+};
+
+export const TIPO_CUENTA_COLOR: Record<TipoCuenta, string> = {
+  banco: "#2a78d6",
+  efectivo: "#1baf7a",
+  broker: "#4a3aa7",
+  billetera_digital: "#eda100",
+  otro: "#898781",
+};

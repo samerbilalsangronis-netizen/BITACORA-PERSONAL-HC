@@ -6,7 +6,8 @@ import { FinanzasResumen } from "@/components/finanzas/FinanzasResumen";
 import { FinanzasFilters } from "@/components/finanzas/FinanzasFilters";
 import { TransaccionesColumna } from "@/components/finanzas/TransaccionesColumna";
 import { FinanzasBarChart } from "@/components/finanzas/FinanzasBarChart";
-import type { CategoriaPersonalizada, Transaccion } from "@/lib/supabase/types";
+import { CuentasPanel } from "@/components/finanzas/CuentasPanel";
+import type { CategoriaPersonalizada, Cuenta, Transaccion } from "@/lib/supabase/types";
 import { daysAgoISO } from "@/lib/utils";
 import { todayISOForUser } from "@/lib/server-date";
 
@@ -26,7 +27,7 @@ export default async function FinanzasPage({
   if (desde) query = query.gte("fecha", desde);
   if (hasta) query = query.lte("fecha", hasta);
 
-  const [{ data: chartData }, { data }, { data: categoriasData }] = await Promise.all([
+  const [{ data: chartData }, { data }, { data: categoriasData }, { data: cuentasData }] = await Promise.all([
     supabase
       .from("transacciones")
       .select("*")
@@ -35,11 +36,13 @@ export default async function FinanzasPage({
       .order("fecha", { ascending: true }),
     query.order("fecha", { ascending: false }).order("created_at", { ascending: false }),
     supabase.from("categorias_personalizadas").select("*").eq("user_id", user.id).order("created_at", { ascending: true }),
+    supabase.from("cuentas").select("*").eq("user_id", user.id).order("orden"),
   ]);
 
   const transacciones = (data ?? []) as Transaccion[];
   const todas = (chartData ?? []) as Transaccion[];
   const categoriasPersonalizadas = (categoriasData ?? []) as CategoriaPersonalizada[];
+  const cuentas = (cuentasData ?? []) as Cuenta[];
 
   const ingresos = transacciones.filter((t) => t.tipo === "ingreso");
   const gastos = transacciones.filter((t) => t.tipo === "egreso");
@@ -56,6 +59,8 @@ export default async function FinanzasPage({
         <h1 className="text-xl font-semibold">Gestor financiero</h1>
         <p className="text-sm text-muted">Registra tus ingresos y egresos para saber en qué usas tu dinero.</p>
       </div>
+
+      <CuentasPanel cuentasIniciales={cuentas} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard label="Ingresos del mes" value={formatoMonto.format(ingresosMes)} icon={TrendingUp} />
@@ -77,12 +82,14 @@ export default async function FinanzasPage({
           tipo="ingreso"
           transacciones={ingresos}
           categoriasPersonalizadas={categoriasPersonalizadas}
+          cuentas={cuentas}
           today={today}
         />
         <TransaccionesColumna
           tipo="egreso"
           transacciones={gastos}
           categoriasPersonalizadas={categoriasPersonalizadas}
+          cuentas={cuentas}
           today={today}
         />
       </div>

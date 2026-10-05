@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import { deleteTransaccion } from "@/lib/actions/finanzas";
 import { resolveCategoriaVisual } from "@/lib/constants";
-import type { CategoriaPersonalizada, Transaccion } from "@/lib/supabase/types";
+import type { CategoriaPersonalizada, Cuenta, Transaccion } from "@/lib/supabase/types";
 import { formatDate, labelize, cn } from "@/lib/utils";
 
 const formatoMonto = new Intl.NumberFormat("es-ES", { style: "currency", currency: "USD" });
@@ -13,16 +13,19 @@ const formatoMonto = new Intl.NumberFormat("es-ES", { style: "currency", currenc
 export function TransaccionRow({
   transaccion,
   categoriasPersonalizadas = [],
+  cuentas = [],
   index = 0,
 }: {
   transaccion: Transaccion;
   categoriasPersonalizadas?: CategoriaPersonalizada[];
+  cuentas?: Cuenta[];
   index?: number;
 }) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const esIngreso = transaccion.tipo === "ingreso";
   const { Icon, color } = resolveCategoriaVisual(transaccion.categoria, categoriasPersonalizadas);
+  const cuenta = transaccion.cuenta_id ? cuentas.find((c) => c.id === transaccion.cuenta_id) : undefined;
 
   function onDelete() {
     if (!confirm("¿Eliminar esta transacción?")) return;
@@ -48,7 +51,10 @@ export function TransaccionRow({
           {labelize(transaccion.categoria)}
           {transaccion.descripcion && <span className="font-normal text-muted"> · {transaccion.descripcion}</span>}
         </p>
-        <p className="text-xs text-muted">{formatDate(transaccion.fecha)}</p>
+        <p className="text-xs text-muted">
+          {formatDate(transaccion.fecha)}
+          {cuenta && <span> · {cuenta.nombre}</span>}
+        </p>
       </div>
       <span className={cn("shrink-0 text-sm font-semibold tabular-nums", esIngreso ? "text-accent" : "text-danger")}>
         {esIngreso ? "+" : "-"}

@@ -7,7 +7,7 @@ import { TransaccionRow } from "@/components/finanzas/TransaccionRow";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
-import type { CategoriaPersonalizada, Transaccion, TipoTransaccion } from "@/lib/supabase/types";
+import type { CategoriaPersonalizada, Cuenta, Transaccion, TipoTransaccion } from "@/lib/supabase/types";
 
 const formatoMonto = new Intl.NumberFormat("es-ES", { style: "currency", currency: "USD" });
 
@@ -15,11 +15,13 @@ export function TransaccionesColumna({
   tipo,
   transacciones,
   categoriasPersonalizadas,
+  cuentas,
   today,
 }: {
   tipo: TipoTransaccion;
   transacciones: Transaccion[];
   categoriasPersonalizadas: CategoriaPersonalizada[];
+  cuentas: Cuenta[];
   today: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -57,6 +59,7 @@ export function TransaccionesColumna({
         <NuevaTransaccionForm
           tipo={tipo}
           categoriasPersonalizadas={categoriasPersonalizadas}
+          cuentas={cuentas}
           today={today}
           onClose={() => setOpen(false)}
         />
@@ -69,7 +72,13 @@ export function TransaccionesColumna({
       ) : (
         <ul className="divide-y divide-border rounded-xl border border-border bg-surface px-4">
           {transacciones.map((t, i) => (
-            <TransaccionRow key={t.id} transaccion={t} categoriasPersonalizadas={categoriasPersonalizadas} index={i} />
+            <TransaccionRow
+              key={t.id}
+              transaccion={t}
+              categoriasPersonalizadas={categoriasPersonalizadas}
+              cuentas={cuentas}
+              index={i}
+            />
           ))}
         </ul>
       )}

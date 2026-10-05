@@ -6,7 +6,7 @@ import { Calendar as CalendarIcon, Plus, X } from "lucide-react";
 import { createTransaccion } from "@/lib/actions/finanzas";
 import { createCategoriaPersonalizada } from "@/lib/actions/categorias";
 import type { ActionState } from "@/lib/actions/auth";
-import { Input, Label, Textarea } from "@/components/ui/Input";
+import { Input, Label, Select, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { FormError, FormSuccess } from "@/components/ui/FormMessage";
@@ -20,7 +20,7 @@ import {
   iconoFor,
 } from "@/lib/constants";
 import { cn, daysAgoISO, labelize } from "@/lib/utils";
-import type { CategoriaPersonalizada, TipoTransaccion } from "@/lib/supabase/types";
+import type { CategoriaPersonalizada, Cuenta, TipoTransaccion } from "@/lib/supabase/types";
 import type { LucideIcon } from "lucide-react";
 
 const initialState: ActionState = {};
@@ -43,16 +43,19 @@ function opcionesPara(tipo: TipoTransaccion, customCats: CategoriaPersonalizada[
 export function NuevaTransaccionForm({
   tipo,
   categoriasPersonalizadas,
+  cuentas,
   today,
   onClose,
 }: {
   tipo: TipoTransaccion;
   categoriasPersonalizadas: CategoriaPersonalizada[];
+  cuentas: Cuenta[];
   today: string;
   onClose: () => void;
 }) {
   const [customCats, setCustomCats] = useState(categoriasPersonalizadas);
   const [categoria, setCategoria] = useState(categoriasPara(tipo)[0]);
+  const [cuentaId, setCuentaId] = useState("");
   const [fecha, setFecha] = useState(today);
   const [showCalendar, setShowCalendar] = useState(false);
 
@@ -120,6 +123,25 @@ export function NuevaTransaccionForm({
           <Label htmlFor={`monto-${tipo}`}>Monto</Label>
           <Input id={`monto-${tipo}`} name="monto" type="number" min={0} step="0.01" required placeholder="0.00" className="text-lg" />
         </div>
+
+        {cuentas.length > 0 && (
+          <div>
+            <Label htmlFor={`cuenta-${tipo}`}>Cuenta (opcional)</Label>
+            <Select
+              id={`cuenta-${tipo}`}
+              name="cuenta_id"
+              value={cuentaId}
+              onChange={(e) => setCuentaId(e.target.value)}
+            >
+              <option value="">Sin cuenta asignada</option>
+              {cuentas.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nombre}
+                </option>
+              ))}
+            </Select>
+          </div>
+        )}
 
         <div>
           <Label>Categoría</Label>

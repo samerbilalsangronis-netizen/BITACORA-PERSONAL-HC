@@ -8,6 +8,7 @@ export type TipoHabito = "check" | "contador";
 export type TipoObjetivo = "frecuencia" | "hito" | "acumulado";
 export type PeriodoObjetivo = "dia" | "semana" | "mes";
 export type OrigenObjetivo = "agente" | "usuario";
+export type TipoCuenta = "banco" | "efectivo" | "broker" | "billetera_digital" | "otro";
 
 // Nota: estos tipos usan `type` (no `interface`) a propósito. Un `interface`
 // no satisface el `extends Record<string, unknown>` que exige el generic
@@ -154,6 +155,20 @@ export type Transaccion = {
   monto: number;
   descripcion: string;
   fecha: string;
+  cuenta_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type Cuenta = {
+  id: string;
+  user_id: string;
+  nombre: string;
+  tipo: TipoCuenta;
+  saldo: number;
+  icono: string;
+  color: string;
+  orden: number;
   created_at: string;
   updated_at: string;
 };
@@ -251,9 +266,20 @@ export type Database = {
         Update: Partial<MetaObjetivoAvance>;
         Relationships: [];
       };
+      cuentas: {
+        Row: Cuenta;
+        Insert: Partial<Cuenta>;
+        Update: Partial<Cuenta>;
+        Relationships: [];
+      };
     };
     Views: EmptyRecord;
-    Functions: EmptyRecord;
+    Functions: {
+      ajustar_saldo_cuenta: {
+        Args: { p_cuenta_id: string; p_delta: number; p_user_id: string };
+        Returns: undefined;
+      };
+    };
     Enums: EmptyRecord;
     CompositeTypes: EmptyRecord;
   };
